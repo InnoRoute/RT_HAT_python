@@ -11,13 +11,13 @@ setuptools.setup(
     description="RealtimeHAT control",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/InnoRoute/RealtimeHAT",
+    url="https://github.com/InnoRoute/RT_HAT_python",
     project_urls={
-        "Bug Tracker": "https://github.com/InnoRoute/RealtimeHAT/issues",
+        "Bug Tracker": "https://github.com/InnoRoute/RT_HAT_python/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU GPL v3",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
