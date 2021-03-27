@@ -41,9 +41,11 @@ def ll_write(address,value):
 		time.sleep(0.1)
 		poll=poll+1
 		if poll>pollcount:
+			__debug("write error to "+hex(address));
 			return 0
 	os.popen('echo '+str(value)+' > /proc/InnoRoute/SPI_data')
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_write')
+	__debug(hex(value)+" written to "+hex(address))
 
 #check if address available	
 def check_register(register):
