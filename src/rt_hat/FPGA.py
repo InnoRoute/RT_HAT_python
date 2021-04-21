@@ -3,6 +3,7 @@ import os
 import time
 environment={}
 pollcount=100
+DEBUG_ENABLE=False
 
 
 #init, load environment addresses
@@ -26,7 +27,11 @@ def ll_read(address):
 			return 0
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_read')
 	return int(os.popen('cat /proc/InnoRoute/SPI_data').read(),16)
-
+	
+def __debug(message):
+	global DEBUG_ENABLE
+	if DEBUG_ENABLE:
+		print(message)
 
 #low level register access
 def ll_write(address,value):
@@ -36,9 +41,11 @@ def ll_write(address,value):
 		time.sleep(0.1)
 		poll=poll+1
 		if poll>pollcount:
+			__debug("write error to "+hex(address));
 			return 0
 	os.popen('echo '+str(value)+' > /proc/InnoRoute/SPI_data')
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_write')
+	__debug(hex(value)+" written to "+hex(address))
 
 #check if address available	
 def check_register(register):
@@ -60,6 +67,11 @@ def reg_write(register,value):
 	if not check_register(register):
 		raise Exception("register "+register+" not defined")
 	ll_write(environment[register],value)
+	
+def get_addr(register):
+	if not check_register(register):
+		raise Exception("register "+register+" not defined")
+	return environment[register]
 	
 def status():
 	FPGA_status={}
@@ -86,5 +98,12 @@ def status():
 	FPGA_status["TEST_DRIVE"]=hex(reg_read("C_ADDR_SPI_TEST_DRIVE"))
 	FPGA_status["TEST_VALUE"]=hex(reg_read("C_ADDR_SPI_TEST_VALUE"))	
 	return FPGA_status
+	
+def now():
+		BRIDGE_clock_value_L=reg_read("C_ADDR_RTC_BRIDGE_LOW");
+		BRIDGE_clock_value_H=reg_read("C_ADDR_RTC_BRIDGE_HIGH");
+		CTRLD_clock_value_L=reg_read("C_ADDR_RTC_CTRLD_LOW");
+		CTRLD_clock_value_H=reg_read("C_ADDR_RTC_CTRLD_HIGH");
+		return CTRLD_clock_value_L + (CTRLD_clock_value_H<<32);
 	
 	
