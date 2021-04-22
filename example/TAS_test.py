@@ -1,6 +1,7 @@
 #programm reads current fpga status
 from rt_hat import TAS as RT_HAT_TAS
 RT_HAT_TAS.DEBUG_ENABLE=True
+RT_HAT_TAS.DEBUG_OUTPUT=True
 RT_HAT_TAS.init("/usr/share/InnoRoute/hat_env.sh")
 port=1
 my_GCL=[
