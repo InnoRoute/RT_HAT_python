@@ -8,6 +8,7 @@ ADMIN_CYCLE_TIME=0
 ADMIN_CYCLE_TIME_EXT=0
 __TASvar={}
 DEBUG_ENABLE=False
+DEBUG_OUTPUT=False
 __pollcount=100
 __timewindow=2000000000
 
@@ -41,7 +42,9 @@ def __debug(message):
 def init(envfile):
 	global __granularity
 	global DEBUG_ENABLE
+	global DEBUG_OUTPUT
 	RT_HAT_FPGA.DEBUG_ENABLE=DEBUG_ENABLE
+	RT_HAT_FPGA.DEBUG_OUTPUT=DEBUG_OUTPUT
 	RT_HAT_FPGA.init(envfile)
 	
 	__init_TASvar()

@@ -4,6 +4,7 @@ import time
 environment={}
 pollcount=100
 DEBUG_ENABLE=False
+DEBUG_OUTPUT=False
 
 
 #init, load environment addresses
@@ -19,6 +20,7 @@ def init(envfile):
 #low level register access	
 def ll_read(address):
 	global pollcount
+	global DEBUG_OUTPUT
 	poll=0
 	while int(os.popen('cat /proc/InnoRoute/SPI_write').read())>0:
 		time.sleep(0.1)
@@ -26,6 +28,8 @@ def ll_read(address):
 		if poll>pollcount:
 			return 0
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_read')
+	if DEBUG_OUTPUT:
+		print("TNbar1 "+hex(address))
 	return int(os.popen('cat /proc/InnoRoute/SPI_data').read(),16)
 	
 def __debug(message):
@@ -36,6 +40,7 @@ def __debug(message):
 #low level register access
 def ll_write(address,value):
 	global pollcount
+	global DEBUG_OUTPUT
 	poll=0
 	while int(os.popen('cat /proc/InnoRoute/SPI_write').read())>0:
 		time.sleep(0.1)
@@ -46,6 +51,8 @@ def ll_write(address,value):
 	os.popen('echo '+str(value)+' > /proc/InnoRoute/SPI_data')
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_write')
 	__debug(hex(value)+" written to "+hex(address))
+	if DEBUG_OUTPUT:
+		print("TNbar1 "+hex(address)+" "+hex(value))
 
 #check if address available	
 def check_register(register):
