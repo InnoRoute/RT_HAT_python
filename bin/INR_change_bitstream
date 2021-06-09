@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#build on top of https://npyscreen.readthedocs.io/introduction.html
+# ulbricht@innoroute.de 2021
+import npyscreen
+import wget
+from configobj import ConfigObj
+import os
+from rt_hat import FPGA as RT_HAT_FPGA
+
+selected=""
+modes={"TSN endpoint (default)":"uc0"}
+def is_root():
+    return os.geteuid() == 0
+				
+class TestApp(npyscreen.NPSApp):
+    def main(self):
+        global selected
+        F  = npyscreen.Form(name = "Realtime-HAT Bitstream selection",)
+        ms = F.add(npyscreen.TitleSelectOne, max_height=4, value = [0,], name="Select the bitstream to download.",
+                values = list(modes.keys()), scroll_exit=True)
+
+
+        F.edit()
+
+        selected=ms.get_selected_objects()
+        print("möp")
+
+if __name__ == "__main__":
+    if is_root()==False:
+    	print("need to run with sudo")
+    	exit(1)		
+    App = TestApp()
+    App.run()
+    print("Downloading config file...")
+    if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
+        os.remove("/usr/share/InnoRoute/bs_info.conf")
+    configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+modes[selected[0]]+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
+    bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
+    print("\nDownloading bitstream...")
+    if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
+        os.remove("/usr/share/InnoRoute/user_bitstream.bit")
+    bsfile=wget.download(bsname,out="/usr/share/InnoRoute/user_bitstream.bit") 
+    print("\nload bitstream")
+    os.system('cat /usr/share/InnoRoute/bs_info.conf | grep "C_ADDR_" >/usr/share/InnoRoute/hat_env.sh')
+    os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')
+    RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+    license=int(RT_HAT_FPGA.status()['LICENSE'],16)
+    print("License:"+hex(license))
+    print("done")
+
+

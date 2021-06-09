@@ -5,11 +5,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="rt-hat-inr", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="Marian Ulbricht",
     author_email="ulbricht@innoroute.de",
     description="RealtimeHAT control",
     long_description=long_description,
+    install_requires=[
+   'npyscreen',
+   'wget',
+   'configobj'   
+		],
+    scripts=['bin/INR_change_bitstream'],
     long_description_content_type="text/markdown",
     url="https://github.com/InnoRoute/RealtimeHAT",
     project_urls={

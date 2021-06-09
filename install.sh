@@ -9,6 +9,6 @@ ssh pi@$IP_addr 'rm rt_hat_inr-*-py3-none-any.whl'
 scp dist/rt_hat_inr-*-py3-none-any.whl pi@$IP_addr:~/ &
 scp example/* pi@$IP_addr:~/ &
 wait
-ssh pi@$IP_addr 'python3 -m pip install rt_hat_inr-*-py3-none-any.whl'
-ssh pi@$IP_addr 'python3 TAS_test.py'
+ssh pi@$IP_addr 'sudo python3 -m pip install rt_hat_inr-*-py3-none-any.whl'
+#ssh pi@$IP_addr 'sudo INR_change_bitstream'
 
