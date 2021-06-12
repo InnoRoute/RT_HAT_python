@@ -51,10 +51,13 @@ def init(envfile):
 
 def set_GCL(new_GCL,port):
 	global __GCL
+	global __TASvar
 	__checkport(port)
 	for entry in new_GCL:
 		if len(entry) != 2:
 			raise Exception("entry "+str(entry)+" of gcl is not valid")
+		if (int(entry[1]) % int(__TASvar["granularity"]))>0:
+			print("Warning: entry "+str(entry)+" of GCL don't match minimal TAS ganularity of "+str(__TASvar["granularity"])+"ns")
 	__GCL[port]=new_GCL
 	
 	
@@ -101,7 +104,7 @@ def apply(port):
 	__debug("wait for config_pending is cleared")
 	while RT_HAT_FPGA.ll_read(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_CONFIG_CHANGE_PENDING",port)) > 0:
 		poll+=1
-#		time.sleep(0.01)
+		time.sleep(0.01)
 		if poll> __pollcount:
 			raise Exception("TAS pending to long!")
 			break
