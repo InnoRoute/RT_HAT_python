@@ -108,6 +108,10 @@ def status():
 	FPGA_status["TEST_VALUE"]=hex(reg_read("C_ADDR_SPI_TEST_VALUE"))	
 	return FPGA_status
 	
+def license_features():
+	FPGA_features={}
+	return FPGA_features
+	
 def now():
 		BRIDGE_clock_value_L=reg_read("C_ADDR_RTC_BRIDGE_LOW");
 		BRIDGE_clock_value_H=reg_read("C_ADDR_RTC_BRIDGE_HIGH");

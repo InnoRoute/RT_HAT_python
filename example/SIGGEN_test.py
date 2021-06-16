@@ -1,0 +1,8 @@
+from rt_hat import SIGGEN as RT_HAT_SIGGEN
+RT_HAT_SIGGEN.DEBUG_ENABLE=True
+RT_HAT_SIGGEN.init("/usr/share/InnoRoute/hat_env.sh")
+
+DUTY_CYCLE=0.5
+PERIOD=1003
+PHASE=0
+RT_HAT_SIGGEN.set(DUTY_CYCLE,PERIOD,PHASE)

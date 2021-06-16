@@ -9,6 +9,8 @@ ADMIN_CYCLE_TIME_EXT=0
 __TASvar={}
 DEBUG_ENABLE=False
 DEBUG_OUTPUT=False
+__correct_value_up=True
+AUTOCORRECT_GCL=True
 __pollcount=100
 __timewindow=2000000000
 
@@ -38,6 +40,10 @@ def __debug(message):
 	global DEBUG_ENABLE
 	if DEBUG_ENABLE:
 		print(message)
+
+def get_granularity():
+	global __TASvar
+	return int(__TASvar["granularity"])
 	
 def init(envfile):
 	global __granularity
@@ -49,6 +55,86 @@ def init(envfile):
 	
 	__init_TASvar()
 
+def __correct_value(value):
+	granularity=get_granularity()
+	global __correct_value_up
+	if (__correct_value_up==True):
+		__correct_value_up=False
+		while(value%granularity):
+			value-=1
+	else:
+		__correct_value_up=True
+		while(value%granularity):
+			value+=1
+	return value
+		
+	
+def __blowup_GCL(GCL):
+	global DEBUG_ENABLE
+	global __correct_value_up
+	maxfactor=2
+	big_GCL=[[entry[0],__correct_value(entry[1])] for entry in GCL]
+	granularity=get_granularity()
+	cycle=0
+	factor=1
+	for entry in GCL:
+		cycle+=entry[1]
+	cycle_new=cycle
+	if(DEBUG_ENABLE==True):
+		print("cycle: "+str(cycle))
+	error=True
+	pos=0
+	while error==True:
+		
+		if factor<maxfactor:	
+			factor+=1
+			big_GCL=big_GCL+GCL
+		if len(GCL)%2==0:
+			__correct_value_up=not __correct_value_up
+		big_GCL=[[entry[0],__correct_value(entry[1])] for entry in big_GCL]
+		cycle_new=0
+		for entry in big_GCL:
+			cycle_new+=entry[1]
+		error_ns=(factor*cycle)-cycle_new
+		if(DEBUG_ENABLE==True):
+			print("error:"+str(error_ns))
+#		pos=factor+1
+		while (error_ns!=0):
+			if error_ns>granularity:
+				old=big_GCL[pos][1]
+				if error_ns<0:
+					__correct_value_up=True
+					big_GCL[pos][1]=__correct_value(big_GCL[pos][1]+round(granularity/2))
+				else:				
+					__correct_value_up=False
+					big_GCL[pos][1]=__correct_value(big_GCL[pos][1]-round(granularity/2))
+				error_ns-=big_GCL[pos][1]-old
+			else: 
+				big_GCL[pos][1]+=error_ns
+				error_ns=0
+				maxfactor+=1
+			pos+=1
+			if pos>len(big_GCL):
+				pos=0
+		big_GCL=[[entry[0],__correct_value(entry[1])] for entry in big_GCL]
+		cycle_new=0
+		for entry in big_GCL:
+			cycle_new+=entry[1]
+		if cycle_new==(factor*cycle):
+			error=False
+		if(DEBUG_ENABLE==True):
+			print(big_GCL)
+		
+
+#	while (cycle*factor)!:
+#		factor+=1
+	if(DEBUG_ENABLE==True):
+		print("blowing up GCL by factor "+str(factor)+" new cycle time is "+str(sum([entry[1] for entry in big_GCL]))+" mean cycle is "+str(sum([entry[1] for entry in big_GCL])/factor))
+	
+	
+	
+	return big_GCL
+
 def set_GCL(new_GCL,port):
 	global __GCL
 	global __TASvar
@@ -56,6 +142,9 @@ def set_GCL(new_GCL,port):
 	for entry in new_GCL:
 		if len(entry) != 2:
 			raise Exception("entry "+str(entry)+" of gcl is not valid")
+	if AUTOCORRECT_GCL:
+		new_GCL=__blowup_GCL(new_GCL)	
+	for entry in new_GCL:	
 		if (int(entry[1]) % int(__TASvar["granularity"]))>0:
 			print("Warning: entry "+str(entry)+" of GCL don't match minimal TAS ganularity of "+str(__TASvar["granularity"])+"ns")
 	__GCL[port]=new_GCL

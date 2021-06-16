@@ -5,9 +5,8 @@ RT_HAT_TAS.DEBUG_OUTPUT=True
 RT_HAT_TAS.init("/usr/share/InnoRoute/hat_env.sh")
 port=2
 my_GCL=[
-	[0x00,48000000], #all gates open for 50us
-	[0x00,48000000], #all gates closed for 50us
-	[0x01,4800800] #all gates closed for 50us
+	[0x00,48000000], #all gates open for 48ms
+	[0x01,48000000] #all gates closed for 48ms
 	] 
 RT_HAT_TAS.set_GCL(my_GCL,port) #set GCL of port
 print(RT_HAT_TAS.get_GCL(port)) #print GCL
