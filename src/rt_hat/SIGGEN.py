@@ -14,14 +14,15 @@ def init(envfile):
 	RT_HAT_TAS.init(envfile)
 
 
-def set(DUTY_CYCLE,PERIOD,PHASE):
+def set(DUTY_CYCLE,PERIOD,PHASE,COUNT):
+#PHASE=starttime
 	granularity=RT_HAT_TAS.get_granularity()
 	if (DUTY_CYCLE<=0 or DUTY_CYCLE>=1):
 		raise Exception("ERROR: 0<DUTY_CYCLE<1 !")
 	if (PERIOD<=0 or PERIOD>=2000000000):
 		raise Exception("ERROR: 0<PERIOD<2s !")
-	if (PHASE<0 or PHASE>PERIOD):
-		raise Exception("ERROR: 0 <=PHASE<=PERIOD !")
+#	if (PHASE<0 or PHASE>PERIOD):
+#		raise Exception("ERROR: 0 <=PHASE<=PERIOD !")
 	port=2 # select virtual trigger port
 	my_GCL=[ # gatestates hex and times in ns
 		[0x01,math.floor(PERIOD*DUTY_CYCLE)], #all gates open for 48ms
@@ -33,4 +34,5 @@ def set(DUTY_CYCLE,PERIOD,PHASE):
 	RT_HAT_TAS.ADMIN_BASE_TIME=PHASE
 	RT_HAT_TAS.ADMIN_CYCLE_TIME=0#0:automatic calculated from sum of GCL
 	RT_HAT_TAS.ADMIN_CYCLE_TIME_EXT=0
+	RT_HAT_TAS.TRIGGER_CNT=COUNT
 	RT_HAT_TAS.apply(port)#apply tas settings to port 

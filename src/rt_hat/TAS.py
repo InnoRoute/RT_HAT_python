@@ -6,6 +6,7 @@ __GCL=[[[],[]],[[],[]],[[],[]]]
 ADMIN_BASE_TIME=0
 ADMIN_CYCLE_TIME=0
 ADMIN_CYCLE_TIME_EXT=0
+TRIGGER_CNT=0
 __TASvar={}
 DEBUG_ENABLE=False
 DEBUG_OUTPUT=False
@@ -183,6 +184,7 @@ def apply(port):
 	global ADMIN_CYCLE_TIME_EXT
 	global __pollcount
 	global __timewindow
+	global TRIGGER_CNT
 	__checkport(port)
 	__apply_GCL(port)
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_GATE_ENABLE",port),1) #enable_TAS	
@@ -217,9 +219,15 @@ def apply(port):
 	while ADMIN_BASE_TIME>(currenttime+__timewindow):
 		currenttime=RT_HAT_FPGA.now()
 		sleeptime_ns=ADMIN_BASE_TIME-currenttime-__timewindow
-		time.sleep(sleeptime_ns/1000000000)
+		if sleeptime_ns>0:
+			__debug("sleeping: "+str(sleeptime_ns)+"ns")
+			time.sleep(sleeptime_ns/1000000000)
+		else:
+			break
+	#currenttime=RT_HAT_FPGA.now()
 	if ADMIN_BASE_TIME<currenttime:
 		__debug("sleeped to long , calculating basetime again...")
+		ADMIN_BASE_TIME-=ADMIN_CYCLE_TIME*10
 		goto .timecalc
 	ADMIN_BASE_TIME&=0xffffffff
 	CONFIG_CHANGE_TIME=ADMIN_BASE_TIME
@@ -229,6 +237,8 @@ def apply(port):
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_ADMIN_BASE_TIME",port),ADMIN_BASE_TIME)
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_ADMIN_CYCLE_TIME",port),ADMIN_CYCLE_TIME)
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_ADMIN_CYCLE_TIME_EXT",port),ADMIN_CYCLE_TIME_EXT)
+	if TRIGGER_CNT>0 and port==2:
+		RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_TRIGGER_CNT",port),TRIGGER_CNT)
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_CONFIG_CHANGE",port),1)#trigger config
 	
 	
