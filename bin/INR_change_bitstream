@@ -6,6 +6,7 @@ import npyscreen
 import wget
 from configobj import ConfigObj
 import os
+import sys
 from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
@@ -48,12 +49,15 @@ if __name__ == "__main__":
     	print("need to run with sudo")
     	exit(1)		
     App = TestApp()
-    App.run()
-    load_bs(modes[selected[0]])
+    if len(sys.argv)==1:
+    	App.run()
+    	load_bs(modes[selected[0]])
+    else:
+    	load_bs(sys.argv[1])
     RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
     license=int(RT_HAT_FPGA.status()['LICENSE'],16)
     print("License:"+hex(license))
-    if (license==0 and modes[selected[0]]!="uc0"):
+    if (license==0 and modes[selected[0]]!="_uc0"):
     	print("##################################")
     	print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
     	print("##################################")
