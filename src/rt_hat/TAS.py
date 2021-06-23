@@ -145,10 +145,14 @@ def set_GCL(new_GCL,port):
 			raise Exception("entry "+str(entry)+" of gcl is not valid")
 	if AUTOCORRECT_GCL:
 		new_GCL=__blowup_GCL(new_GCL)	
+	__GCL[port]=[]
 	for entry in new_GCL:	
 		if (int(entry[1]) % int(__TASvar["granularity"]))>0:
 			print("Warning: entry "+str(entry)+" of GCL don't match minimal TAS ganularity of "+str(__TASvar["granularity"])+"ns")
-	__GCL[port]=new_GCL
+		__correct_value_up=False		
+		__GCL[port].append([entry[0],__correct_value(entry[1])])
+	
+	
 	
 	
 def get_GCL(port):

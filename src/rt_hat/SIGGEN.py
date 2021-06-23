@@ -11,6 +11,7 @@ def init(envfile):
 	global DEBUG_OUTPUT
 	RT_HAT_TAS.DEBUG_ENABLE=DEBUG_ENABLE
 	RT_HAT_TAS.DEBUG_OUTPUT=DEBUG_OUTPUT
+	RT_HAT_TAS.AUTOCORRECT_GCL=False
 	RT_HAT_TAS.init(envfile)
 
 
@@ -28,8 +29,8 @@ def set(DUTY_CYCLE,PERIOD,PHASE,COUNT):
 		[0x01,math.floor(PERIOD*DUTY_CYCLE)], #all gates open for 48ms
 		[0x00,math.floor(PERIOD*(1-DUTY_CYCLE))] #all gates closed for 48ms
 		]
-	if sum([entry[1] for entry in my_GCL])!=PERIOD:
-		my_GCL[0][1]+=1
+#	if sum([entry[1] for entry in my_GCL])!=PERIOD:
+#		my_GCL[0][1]+=1
 	RT_HAT_TAS.set_GCL(my_GCL,port) #set GCL of port
 	RT_HAT_TAS.ADMIN_BASE_TIME=PHASE
 	RT_HAT_TAS.ADMIN_CYCLE_TIME=0#0:automatic calculated from sum of GCL
