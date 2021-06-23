@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="rt-hat-inr", # Replace with your own username
-    version="0.0.8",
+    version="0.0.9",
     author="Marian Ulbricht",
     author_email="ulbricht@innoroute.de",
     description="RealtimeHAT control",
@@ -15,7 +15,7 @@ setuptools.setup(
    'wget',
    'configobj'   
 		],
-    scripts=['bin/INR_change_bitstream','bin/INR_FPGA_status'],
+    scripts=['bin/INR_change_bitstream','bin/INR_FPGA_status','bin/INR_FPGA_license'],
     long_description_content_type="text/markdown",
     url="https://github.com/InnoRoute/RealtimeHAT",
     project_urls={

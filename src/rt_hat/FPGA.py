@@ -16,6 +16,10 @@ def init(envfile):
 				C_NAME=line.split('"')[0].split('=')[0].replace(" ", "")
 				C_VALUE=int(line.split('"')[1].replace(" ", ""),16)
 				environment[C_NAME]=C_VALUE
+			if "FEATURE_" in line:
+				C_NAME=line.split('"')[0].split('=')[0].replace(" ", "")
+				C_VALUE=line.split('"')[1]
+				environment[C_NAME]=C_VALUE
 				
 #low level register access	
 def ll_read(address):
@@ -109,7 +113,12 @@ def status():
 	return FPGA_status
 	
 def license_features():
-	FPGA_features={}
+	FPGA_features=[]
+	featuremap=0
+	for x in range(32):
+		if check_register("FEATURE_"+str(x)+'_NAME'):
+			FPGA_features.append({"name":environment["FEATURE_"+str(x)+'_NAME'],"description":environment["FEATURE_"+str(x)+'_DESCRIPTION'],"status":(featuremap & (1<< x)) > 0})
+		
 	return FPGA_features
 	
 def now():
