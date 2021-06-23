@@ -51,13 +51,14 @@ if __name__ == "__main__":
     App = TestApp()
     if len(sys.argv)==1:
     	App.run()
-    	load_bs(modes[selected[0]])
+    	selected=modes[selected[0]]
     else:
-    	load_bs(sys.argv[1])
+    	selected=sys.argv[1]
+    load_bs(selected)
     RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
     license=int(RT_HAT_FPGA.status()['LICENSE'],16)
     print("License:"+hex(license))
-    if (license==0 and modes[selected[0]]!="_uc0"):
+    if (license==0 and selected !="_uc0"):
     	print("##################################")
     	print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
     	print("##################################")

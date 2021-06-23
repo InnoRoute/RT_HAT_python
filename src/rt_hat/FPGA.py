@@ -113,8 +113,8 @@ def status():
 	return FPGA_status
 	
 def license_features():
-	FPGA_features=[]
-	featuremap=0
+	FPGA_features=[]	
+	featuremap=reg_read("C_ADDR_SPI_LICENSE")>>8
 	for x in range(32):
 		if check_register("FEATURE_"+str(x)+'_NAME'):
 			FPGA_features.append({"name":environment["FEATURE_"+str(x)+'_NAME'],"description":environment["FEATURE_"+str(x)+'_DESCRIPTION'],"status":(featuremap & (1<< x)) > 0})
