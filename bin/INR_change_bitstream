@@ -9,7 +9,7 @@ import os
 from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
-modes={"TSN endpoint (default)":"uc0"}
+modes={"TSN endpoint (default)":"_uc0"}
 def is_root():
     return os.geteuid() == 0
 				
@@ -28,17 +28,20 @@ class TestApp(npyscreen.NPSApp):
 
 def load_bs(bs_name):
     print("Downloading config file...")
-    if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
-        os.remove("/usr/share/InnoRoute/bs_info.conf")
-    configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
-    bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
-    print("\nDownloading bitstream...")
-    if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
-        os.remove("/usr/share/InnoRoute/user_bitstream.bit")
-    bsfile=wget.download(bsname,out="/usr/share/InnoRoute/user_bitstream.bit") 
-    print("\nload bitstream")
-    os.system('cat /usr/share/InnoRoute/bs_info.conf | grep "C_ADDR_" >/usr/share/InnoRoute/hat_env.sh')
-    os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')	
+    try:
+    	if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
+    		os.remove("/usr/share/InnoRoute/bs_info.conf")
+    	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
+    	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
+    	print("\nDownloading bitstream...")
+    	if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
+    		os.remove("/usr/share/InnoRoute/user_bitstream.bit")
+    	bsfile=wget.download(bsname,out="/usr/share/InnoRoute/user_bitstream.bit") 
+    	print("\nload bitstream")
+    	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
+    	os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')	
+    except Exception as e:
+    	print("Download failed, check your internet connection!\n"+str(e))
 
 if __name__ == "__main__":
     if is_root()==False:
