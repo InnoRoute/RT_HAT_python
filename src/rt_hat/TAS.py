@@ -179,6 +179,9 @@ def __apply_GCL(port):
 		ID=ID+1
 	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_ADMIN_GCL_LEN",port),len(__GCL[port]))
 	
+def set_trigger_en(val):
+	RT_HAT_FPGA.ll_write(__portalign_base_addr("C_ADDR_TM_SCHED_TAS_TRIGGER_EN",2),val)
+	
 
 	
 @with_goto		

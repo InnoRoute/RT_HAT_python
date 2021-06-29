@@ -32,6 +32,7 @@ def set(DUTY_CYCLE,PERIOD,PHASE,COUNT):
 #	if sum([entry[1] for entry in my_GCL])!=PERIOD:
 #		my_GCL[0][1]+=1
 	RT_HAT_TAS.set_GCL(my_GCL,port) #set GCL of port
+	RT_HAT_TAS.set_trigger_en(1)
 	RT_HAT_TAS.ADMIN_BASE_TIME=PHASE
 	RT_HAT_TAS.ADMIN_CYCLE_TIME=0#0:automatic calculated from sum of GCL
 	RT_HAT_TAS.ADMIN_CYCLE_TIME_EXT=0
