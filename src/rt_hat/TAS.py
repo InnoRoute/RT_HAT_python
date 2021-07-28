@@ -160,6 +160,9 @@ def get_GCL(port):
 	__checkport(port)
 	return __GCL[port]
 
+def get_portalign_base_addr(addr,port):
+	return __portalign_base_addr(addr,port)
+	
 def __portalign_base_addr(addr,port):
 	__checkport(port)
 	return RT_HAT_FPGA.get_addr(addr)+port*get_TASvar("PORT_TSN_width")

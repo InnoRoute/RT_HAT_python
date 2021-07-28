@@ -14,7 +14,20 @@ def init(envfile):
 	RT_HAT_TAS.AUTOCORRECT_GCL=False
 	RT_HAT_TAS.init(envfile)
 
-
+def trigger(ADMIN_BASE_TIME):
+	global DEBUG_ENABLE
+#	now=RT_HAT_TAS.RT_HAT_FPGA.now()
+#	if ADMIN_BASE_TIME-now<50000000: #50ms is an empirical value, free free to adjust, if to less, you have to reset the FPGA
+#		if DEBUG_ENABLE:
+#			print("trigger failed, time to short:"+str(ADMIN_BASE_TIME-now)+"ns")
+#		return 1
+	ADMIN_BASE_TIME&=0xffffffff
+	RT_HAT_TAS.RT_HAT_FPGA.ll_write(RT_HAT_TAS.get_portalign_base_addr("C_ADDR_TM_SCHED_TAS_ADMIN_BASE_TIME",2),ADMIN_BASE_TIME)
+	if RT_HAT_TAS.TRIGGER_CNT>0:
+		RT_HAT_TAS.RT_HAT_FPGA.ll_write(RT_HAT_TAS.get_portalign_base_addr("C_ADDR_TM_SCHED_TAS_TRIGGER_CNT",2),RT_HAT_TAS.TRIGGER_CNT)
+	RT_HAT_TAS.RT_HAT_FPGA.ll_write(RT_HAT_TAS.get_portalign_base_addr("C_ADDR_TM_SCHED_TAS_CONFIG_CHANGE",2),1)#trigger config
+	return 0
+	
 def set(DUTY_CYCLE,PERIOD,PHASE,COUNT):
 #PHASE=starttime
 	granularity=RT_HAT_TAS.get_granularity()

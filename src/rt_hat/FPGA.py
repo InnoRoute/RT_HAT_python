@@ -89,6 +89,7 @@ def get_addr(register):
 def status():
 	FPGA_status={}
 	FPGA_status["ID"]=hex(reg_read("C_ADDR_SPI_FPGA_ID0")+(reg_read("C_ADDR_SPI_FPGA_ID1") << 32))
+	FPGA_status["ACCESS_ERROR"]=hex(reg_read("C_ADDR_SPI_ACCESS_ERROR"))
 	FPGA_status["Board_REV"]=hex(reg_read("C_ADDR_SPI_BOARD_REV"))
 	FPGA_status["TEMP"]=reg_read("C_ADDR_SPI_FPGA_TEMP")*504/4096-273
 	FPGA_status["FPGA_REV"]=hex(reg_read("C_ADDR_SPI_FPGA_REV"))	
@@ -100,7 +101,6 @@ def status():
 	FPGA_status["FPGA_ALARM"]=hex(reg_read("C_ADDR_SPI_FPGA_ALARM"))
 	FPGA_status["CONFIG_CHECK"]=hex(reg_read("C_ADDR_SPI_CONFIG_CHECK"))
 	FPGA_status["LICENSE"]=hex(reg_read("C_ADDR_SPI_LICENSE"))
-	FPGA_status["ACCESS_ERROR"]=hex(reg_read("C_ADDR_SPI_ACCESS_ERROR"))
 	FPGA_status["FIFO_OVERFLOW"]=hex(reg_read("C_ADDR_SPI_FIFO_OVERFLOW"))
 	FPGA_status["FIFO_UNDERRUN"]=hex(reg_read("C_ADDR_SPI_FIFO_UNDERRUN"))
 	FPGA_status["EXT_INTERRUPT"]=hex(reg_read("C_ADDR_SPI_EXT_INTERRUPT"))
