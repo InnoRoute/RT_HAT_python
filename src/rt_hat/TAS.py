@@ -12,7 +12,7 @@ DEBUG_ENABLE=False
 DEBUG_OUTPUT=False
 __correct_value_up=True
 AUTOCORRECT_GCL=True
-__pollcount=100
+__pollcount=1000
 __timewindow=2000000000
 
 def __init_TASvar():

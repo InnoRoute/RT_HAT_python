@@ -27,14 +27,14 @@ def ll_read(address):
 	global DEBUG_OUTPUT
 	poll=0
 	while int(os.popen('cat /proc/InnoRoute/SPI_write').read())>0:
-		time.sleep(0.1)
+		time.sleep(0.01)
 		poll=poll+1
 		if poll>pollcount:
 			return 0
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_read')
 	if DEBUG_OUTPUT:
 		print("TNbar1 "+hex(address))
-#	time.sleep(0.1)
+	time.sleep(0.01)
 	return int(os.popen('cat /proc/InnoRoute/SPI_data').read(),16)
 	
 def __debug(message):
@@ -55,7 +55,7 @@ def ll_write(address,value):
 			return 0
 	os.popen('echo '+str(value)+' > /proc/InnoRoute/SPI_data')
 	os.popen('echo '+str(address)+' > /proc/InnoRoute/SPI_write')
-	time.sleep(0.1)
+	time.sleep(0.01)
 	__debug(hex(value)+" written to "+hex(address))
 	if DEBUG_OUTPUT:
 		print("TNbar1 "+hex(address)+" "+hex(value))
