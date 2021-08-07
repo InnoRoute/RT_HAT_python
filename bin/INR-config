@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#build on top of https://npyscreen.readthedocs.io/introduction.html
+# ulbricht@innoroute.de 2021
+import npyscreen
+import wget
+from configobj import ConfigObj
+import os
+import sys
+from rt_hat import FPGA as RT_HAT_FPGA
+
+selected=""
+install=[]
+modes={"default RT-hat mode":"0",
+"bridged mode RT0--RT2":"1",
+"6tree endpoint on RT2":"2"}
+addons={"download 6tree configuration":"6tree",
+"Sysrepo netconf server":"sysrepo"}
+def is_root():
+    return os.geteuid() == 0
+				
+class TestApp(npyscreen.NPSApp):
+    def main(self):
+        global selected
+        global install
+        F  = npyscreen.Form(name = "Realtime-HAT network mode config and options",)
+        
+        ms = F.add(npyscreen.TitleSelectOne, max_height=4, value = [int(os.popen("cat /usr/share/InnoRoute/rt_hat.conf | grep rthat_network_mode | cut -d '=' -f2").read()),], name="Select the System network configuration mode.",
+                values = list(modes.keys()), scroll_exit=True)
+        ms2= F.add(npyscreen.TitleMultiSelect, max_height =-2, value = [], name="Install additional stuff:",
+                values = list(addons.keys()), scroll_exit=True)
+
+        F.edit()
+
+        selected=ms.get_selected_objects()
+        install=ms2.get_selected_objects()
+        print("möp")
+
+if __name__ == "__main__":
+    if is_root()==False:
+    	print("need to run with sudo")
+    	exit(1)		
+    App = TestApp()
+    App.run()
+    selected=modes[selected[0]]
+   
+    os.system('sed -i "/rthat_network_mode/crthat_network_mode='+str(selected)+'" /usr/share/InnoRoute/rt_hat.conf')
+    if isinstance(install, list):
+    	for option in install:
+    		if addons[option]=="sysrepo":
+    			os.system('su - pi -c "/usr/share/InnoRoute/install_sysrepo.sh"')
+    		if addons[option]=="6tree":
+    			os.system('su - pi -c "/usr/share/InnoRoute/6tree_download_config.sh"')
+    print("done")
+    os.system('reboot')
+
+
