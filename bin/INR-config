@@ -15,7 +15,8 @@ modes={"default RT-hat mode":"0",
 "bridged mode RT0--RT2":"1",
 "6tree endpoint on RT2":"2"}
 addons={"download 6tree configuration":"6tree",
-"Sysrepo netconf server":"sysrepo"}
+"Sysrepo netconf server":"sysrepo",
+"download newest public bitstream":"updatebs"}
 def is_root():
     return os.geteuid() == 0
 				
@@ -46,11 +47,13 @@ if __name__ == "__main__":
    
     os.system('sed -i "/rthat_network_mode/crthat_network_mode='+str(selected)+'" /usr/share/InnoRoute/rt_hat.conf')
     if isinstance(install, list):
-    	for option in install:
-    		if addons[option]=="sysrepo":
-    			os.system('su - pi -c "/usr/share/InnoRoute/install_sysrepo.sh"')
-    		if addons[option]=="6tree":
-    			os.system('su - pi -c "/usr/share/InnoRoute/6tree_download_config.sh"')
+    	install=[addons[option] for option in install]
+    	if "sysrepo" in install:
+    		os.system('su - pi -c "/usr/share/InnoRoute/install_sysrepo.sh"')
+    	if "6tree" in install:
+    		os.system('su - pi -c "/usr/share/InnoRoute/6tree_download_config.sh"')
+    	if "updatebs" in install:
+    		os.system('INR_change_bitstream')
     print("done")
     os.system('reboot')
 
