@@ -41,6 +41,7 @@ if __name__ == "__main__":
     if is_root()==False:
     	print("need to run with sudo")
     	exit(1)		
+    error_val=0
     App = TestApp()
     App.run()
     selected=modes[selected[0]]
@@ -49,12 +50,15 @@ if __name__ == "__main__":
     if isinstance(install, list):
     	install=[addons[option] for option in install]
     	if "sysrepo" in install:
-    		os.system('su - pi -c "/usr/share/InnoRoute/install_sysrepo.sh"')
+    		error_val+=os.system('su - pi -c "/usr/share/InnoRoute/install_sysrepo.sh"')
     	if "6tree" in install:
-    		os.system('su - pi -c "/usr/share/InnoRoute/6tree_download_config.sh"')
+    		error_val+=os.system('su - pi -c "/usr/share/InnoRoute/6tree_download_config.sh"')
     	if "updatebs" in install:
-    		os.system('INR_change_bitstream')
+    		error_val+=os.system('INR_change_bitstream')
     print("done")
-    os.system('reboot')
+    if error_val=0:
+    	os.system('reboot')
+    else:
+    	print("Error in subprocess, please run again.")
 
 
