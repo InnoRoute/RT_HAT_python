@@ -56,7 +56,7 @@ if __name__ == "__main__":
     	if "updatebs" in install:
     		error_val+=os.system('INR_change_bitstream')
     print("done")
-    if error_val=0:
+    if error_val ==  0:
     	os.system('reboot')
     else:
     	print("Error in subprocess, please run again.")
