@@ -19,11 +19,11 @@ def init(envfile):
 def trigger(ADMIN_BASE_TIME):
 	global DEBUG_ENABLE
 	global __pollcount
-#	now=RT_HAT_TAS.RT_HAT_FPGA.now()
-#	if ADMIN_BASE_TIME-now<50000000: #50ms is an empirical value, free free to adjust, if to less, you have to reset the FPGA
-#		if DEBUG_ENABLE:
-#			print("trigger failed, time to short:"+str(ADMIN_BASE_TIME-now)+"ns")
-#		return 1
+	now=RT_HAT_TAS.RT_HAT_FPGA.now()
+	if ADMIN_BASE_TIME-now<50000000: #50ms is an empirical value, free free to adjust, if to less, you have to reset the FPGA
+		if DEBUG_ENABLE:
+			print("trigger failed, time to short:"+str(ADMIN_BASE_TIME-now)+"ns")
+		return 1
 	ADMIN_BASE_TIME&=0xffffffff
 	while RT_HAT_TAS.RT_HAT_FPGA.ll_read(RT_HAT_TAS.get_portalign_base_addr("C_ADDR_TM_SCHED_TAS_CONFIG_CHANGE_PENDING",2)) > 0:
 		time.sleep(0.01)

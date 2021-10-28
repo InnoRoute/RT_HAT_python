@@ -122,10 +122,13 @@ def license_features():
 	return FPGA_features
 	
 def now():
-		BRIDGE_clock_value_L=reg_read("C_ADDR_RTC_BRIDGE_LOW");
-		BRIDGE_clock_value_H=reg_read("C_ADDR_RTC_BRIDGE_HIGH");
-		CTRLD_clock_value_L=reg_read("C_ADDR_RTC_CTRLD_LOW");
-		CTRLD_clock_value_H=reg_read("C_ADDR_RTC_CTRLD_HIGH");
-		return CTRLD_clock_value_L + (CTRLD_clock_value_H<<32);
+#		BRIDGE_clock_value_L=reg_read("C_ADDR_RTC_BRIDGE_LOW");
+#		BRIDGE_clock_value_H=reg_read("C_ADDR_RTC_BRIDGE_HIGH");
+#		CTRLD_clock_value_L=reg_read("C_ADDR_RTC_CTRLD_LOW");
+#		CTRLD_clock_value_H=reg_read("C_ADDR_RTC_CTRLD_HIGH");
+#		return CTRLD_clock_value_L + (CTRLD_clock_value_H<<32);
+#	prevent interactions with ptp clock access
+		return int(os.popen('sudo phc_ctl /dev/ptp0 get').read().split(' ')[4].split('\n', 1)[0].replace('.', ''))
+		
 	
 	
