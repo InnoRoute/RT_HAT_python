@@ -10,7 +10,14 @@ import sys
 from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
-modes={"TSN endpoint (default)":"_uc0"}
+modes={"Default":"_uc0",
+"Packet Generator":"_uc1",
+"Single Port TSN Endpoint":"_uc2",
+"TSN Mediaconverter":"_uc3",
+"TSN TAP 1G Analyzer Lite":"_uc4",
+"Switched TSN Endpoint":"_uc5"}
+tbi=["_uc1","_uc2""_uc3""_uc4""_uc5"]
+
 def is_root():
     return os.geteuid() == 0
 				
@@ -18,7 +25,9 @@ class TestApp(npyscreen.NPSApp):
     def main(self):
         global selected
         F  = npyscreen.Form(name = "Realtime-HAT Bitstream selection and update",)
-        ms = F.add(npyscreen.TitleSelectOne, max_height=4, value = [0,], name="Select the bitstream to download.",
+        t  = F.add(npyscreen.FixedText, name = "Info", editable=False,value=("To purchase an usecase or extension for your HAT checkout"))
+        t2  = F.add(npyscreen.FixedText, name = "Info", editable=False,value=("https://innoroute.com/hat_ext or contact info@innoroute.de ."))
+        ms = F.add(npyscreen.TitleSelectOne, max_height=10, value = [0,], name="Select the bitstream to download.",
                 values = list(modes.keys()), scroll_exit=True)
 
 
@@ -29,6 +38,9 @@ class TestApp(npyscreen.NPSApp):
 
 def load_bs(bs_name):
     print("Downloading config file...")
+    if bs_name in tbi:
+    	print("This usecase is currently not available contact info@innoroute.de for more information.\n")
+    	return 0
     try:
     	if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
     		os.remove("/usr/share/InnoRoute/bs_info.conf")
@@ -63,7 +75,7 @@ if __name__ == "__main__":
     	print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
     	print("##################################")
     	print("loading default bitstream...")
-    	load_bs("uc0")
+    	load_bs("_uc0")
     print("done")
     os.system('reboot')
 

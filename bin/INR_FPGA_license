@@ -11,4 +11,4 @@ for feature in RT_HAT_FPGA.license_features():
 	else:
 		print("  \033[1m"+feature["name"]+":\033[m\033[91m disabled\033[m")
 	print("  "+feature["description"]+"\n")
-print("\nTo enable more features for your HAT contact info@innoroute.de")
+print("\nTo enable more features for your HAT checkout https://innoroute.com/hat_ext/ or contact info@innoroute.de")
