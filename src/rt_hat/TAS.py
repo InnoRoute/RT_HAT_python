@@ -15,6 +15,13 @@ AUTOCORRECT_GCL=True
 __pollcount=1000
 __timewindow=2000000000
 
+
+def set_reg(register,port,value)
+	RT_HAT_FPGA.ll_write(__portalign_base_addr(register,port),value)
+	
+def get_reg(register,port)
+	return RT_HAT_FPGA.ll_read(__portalign_base_addr(register,port))
+
 def __init_TASvar():
 	global __TASvar
 	__TASvar["granularity"]=RT_HAT_FPGA.reg_read("C_ADDR_TM_SCHED_TAS_TICK_GRANULARITY")
