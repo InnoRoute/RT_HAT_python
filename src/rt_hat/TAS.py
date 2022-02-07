@@ -16,10 +16,10 @@ __pollcount=1000
 __timewindow=2000000000
 
 
-def set_reg(register,port,value)
+def set_reg(register,port,value):
 	RT_HAT_FPGA.ll_write(__portalign_base_addr(register,port),value)
 	
-def get_reg(register,port)
+def get_reg(register,port):
 	return RT_HAT_FPGA.ll_read(__portalign_base_addr(register,port))
 
 def __init_TASvar():
