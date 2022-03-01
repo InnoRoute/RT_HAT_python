@@ -1,30 +1,54 @@
 # python functions for basic fpga accesses
 import os
 import time
+import fcntl, array
+from fcntl import ioctl
 environment={}
 pollcount=100
 DEBUG_ENABLE=False
 DEBUG_OUTPUT=False
+MMI_FALLBACK=False #use old mmi method, not ioctl
+__mmi_file=0
 
 
 #init, load environment addresses
 def init(envfile):
 	global environment
+	global __mmi_file
+	global MMI_FALLBACK
+	global DEBUG_ENABLE
 	with open(envfile) as file_in:
 		for line in file_in:
 			if "C_ADDR" in line:    
 				C_NAME=line.split('"')[0].split('=')[0].replace(" ", "")
 				C_VALUE=int(line.split('"')[1].replace(" ", ""),16)
-				environment[C_NAME]=C_VALUE
-			if "FEATURE_" in line:
+				environment[C_NAME]=int(C_VALUE)
+			if "FEATURE_" in line and not "FEATURE_MAP" in line:
 				C_NAME=line.split('"')[0].split('=')[0].replace(" ", "")
 				C_VALUE=line.split('"')[1]
 				environment[C_NAME]=C_VALUE
+	__mmi_file=open("/proc/InnoRoute/SPI_write")
+	if(reg_read('C_ADDR_SPI_FPGA_ID0')==0): #if id is ioctl read not working (or other error)
+		MMI_FALLBACK=True
+	
 				
-#low level register access	
+#low level register access
+def ll_read_ioctl(address): #new faster ioctl function
+	global DEBUG_OUTPUT
+	global __mmi_file
+	if DEBUG_OUTPUT:
+		print("TNbar1 "+hex(address))
+	buf = array.array('L', [address,0])
+	rv = fcntl.ioctl(__mmi_file, 0x80046162, buf)
+	return buf[1]
+	
+
 def ll_read(address):
 	global pollcount
 	global DEBUG_OUTPUT
+	global MMI_FALLBACK
+	if(MMI_FALLBACK==False):
+		return ll_read_ioctl(address)
 	poll=0
 	while int(os.popen('cat /proc/InnoRoute/SPI_write').read())>0:
 		time.sleep(0.01)
@@ -43,9 +67,23 @@ def __debug(message):
 		print(message)
 
 #low level register access
+def ll_write_ioctl(address,value): #new faster ioctl function
+	global DEBUG_OUTPUT
+	global __mmi_file
+	if DEBUG_OUTPUT:
+		print("TNbar1 "+hex(address)+" "+hex(value))
+	__debug(hex(value)+" written to "+hex(address))
+	buf = array.array('L', [address,value])
+	rv = fcntl.ioctl(__mmi_file, 0x40046161, buf)
+
+	
 def ll_write(address,value):
 	global pollcount
 	global DEBUG_OUTPUT
+	global MMI_FALLBACK
+	if(MMI_FALLBACK==False):
+		ll_write_ioctl(address,value)
+		return
 	poll=0
 	while int(os.popen('cat /proc/InnoRoute/SPI_write').read())>0:
 #		time.sleep(0.1)

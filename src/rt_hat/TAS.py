@@ -26,7 +26,7 @@ def __init_TASvar():
 	global __TASvar
 	__TASvar["granularity"]=RT_HAT_FPGA.reg_read("C_ADDR_TM_SCHED_TAS_TICK_GRANULARITY")
 	if (__TASvar["granularity"] == 0) or (__TASvar["granularity"] > 10):
-		raise Exception("TAS granularity "+str(__TASvar["granularity"])+" not valid! Maybe your FPGA bitstream don't supports this feature.")
+		raise Exception("TAS granularity 0 not valid! Check the communication to the FPGA.")
 	__TASvar["PORT_TSN_width"]=0x800
 	__TASvar["GateControl_list_base"]=RT_HAT_FPGA.get_addr("C_ADDR_SCHED_TAS_GCL_MEM_GATES")
 	__TASvar["GateControl_list_entry_length"]=4
