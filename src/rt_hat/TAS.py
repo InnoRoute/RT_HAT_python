@@ -1,6 +1,5 @@
 from rt_hat import FPGA as RT_HAT_FPGA
 import time
-from goto import with_goto
 
 __GCL=[[[],[]],[[],[]],[[],[]]]
 ADMIN_BASE_TIME=0
@@ -15,9 +14,6 @@ AUTOCORRECT_GCL=True
 __pollcount=1000
 __timewindow=2000000000
 
-
-def _make_code(code, codestring):
-    return code.replace(co_code=codestring)
 
 def set_reg(register,port,value):
 	RT_HAT_FPGA.ll_write(__portalign_base_addr(register,port),value)
@@ -197,7 +193,7 @@ def set_trigger_en(val):
 	
 
 	
-@with_goto		
+	
 def apply(port):
 	global ADMIN_BASE_TIME
 	global ADMIN_CYCLE_TIME
@@ -221,34 +217,36 @@ def apply(port):
 			break
 	currenttime=RT_HAT_FPGA.now()
 	__debug("Current time: "+str(currenttime))
-	label .timecalc
-	if ADMIN_BASE_TIME<currenttime:
-		__debug("Oper time in the past, using time machine!")
-		diff=currenttime-ADMIN_BASE_TIME
-		cycles=int(diff/ADMIN_CYCLE_TIME)+2
-		ADMIN_BASE_TIME=ADMIN_BASE_TIME+cycles*ADMIN_CYCLE_TIME
-	poll=0
-	__debug("ADMIN_BASE_TIME first iteration:"+str(ADMIN_BASE_TIME))
-	while ADMIN_BASE_TIME<currenttime:
-		ADMIN_BASE_TIME=ADMIN_BASE_TIME+ADMIN_CYCLE_TIME
-		currenttime=RT_HAT_FPGA.now()
-		poll+=1
-		if poll> __pollcount*10:
-			raise Exception("no valid ADMIN_BASE_TIME found!")
-	__debug("ADMIN_BASE_TIME:"+str(ADMIN_BASE_TIME))
-	while ADMIN_BASE_TIME>(currenttime+__timewindow):
-		currenttime=RT_HAT_FPGA.now()
-		sleeptime_ns=ADMIN_BASE_TIME-currenttime-__timewindow
-		if sleeptime_ns>0:
-			__debug("sleeping: "+str(sleeptime_ns)+"ns")
-			time.sleep(sleeptime_ns/1000000000)
+	while True:
+		if ADMIN_BASE_TIME<currenttime:
+			__debug("Oper time in the past, using time machine!")
+			diff=currenttime-ADMIN_BASE_TIME
+			cycles=int(diff/ADMIN_CYCLE_TIME)+2
+			ADMIN_BASE_TIME=ADMIN_BASE_TIME+cycles*ADMIN_CYCLE_TIME
+		poll=0
+		__debug("ADMIN_BASE_TIME first iteration:"+str(ADMIN_BASE_TIME))
+		while ADMIN_BASE_TIME<currenttime:
+			ADMIN_BASE_TIME=ADMIN_BASE_TIME+ADMIN_CYCLE_TIME
+			currenttime=RT_HAT_FPGA.now()
+			poll+=1
+			if poll> __pollcount*10:
+				raise Exception("no valid ADMIN_BASE_TIME found!")
+		__debug("ADMIN_BASE_TIME:"+str(ADMIN_BASE_TIME))
+		while ADMIN_BASE_TIME>(currenttime+__timewindow):
+			currenttime=RT_HAT_FPGA.now()
+			sleeptime_ns=ADMIN_BASE_TIME-currenttime-__timewindow
+			if sleeptime_ns>0:
+				__debug("sleeping: "+str(sleeptime_ns)+"ns")
+				time.sleep(sleeptime_ns/1000000000)
+			else:
+				break
+		#currenttime=RT_HAT_FPGA.now()
+		if ADMIN_BASE_TIME<currenttime:
+			__debug("sleeped to long , calculating basetime again...")
+			ADMIN_BASE_TIME-=ADMIN_CYCLE_TIME*10
 		else:
 			break
-	#currenttime=RT_HAT_FPGA.now()
-	if ADMIN_BASE_TIME<currenttime:
-		__debug("sleeped to long , calculating basetime again...")
-		ADMIN_BASE_TIME-=ADMIN_CYCLE_TIME*10
-		goto .timecalc
+
 	ADMIN_BASE_TIME&=0xffffffff
 	CONFIG_CHANGE_TIME=ADMIN_BASE_TIME
 	CYCLE_START_TIME=ADMIN_BASE_TIME
