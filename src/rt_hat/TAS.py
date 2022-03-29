@@ -16,6 +16,9 @@ __pollcount=1000
 __timewindow=2000000000
 
 
+def _make_code(code, codestring):
+    return code.replace(co_code=codestring)
+
 def set_reg(register,port,value):
 	RT_HAT_FPGA.ll_write(__portalign_base_addr(register,port),value)
 	

@@ -1,5 +1,5 @@
 #!/bin/bash
-IP_addr="192.168.1.130"
+IP_addr="192.168.1.110"
 rm dist/*
 python3 -m build &
 ssh pi@$IP_addr 'sudo python3 -m pip uninstall rt-hat-inr -y '
