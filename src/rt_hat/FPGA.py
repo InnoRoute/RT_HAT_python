@@ -28,7 +28,10 @@ def init(envfile):
 				C_VALUE=line.split('"')[1]
 				environment[C_NAME]=C_VALUE
 	__mmi_file=open("/proc/InnoRoute/SPI_write")
-	if(reg_read('C_ADDR_SPI_FPGA_ID0')==0): #if id is ioctl read not working (or other error)
+	try:
+		if(reg_read('C_ADDR_SPI_FPGA_ID0')==0): #if id is ioctl read not working (or other error)
+			MMI_FALLBACK=True
+	except:
 		MMI_FALLBACK=True
 	
 				
