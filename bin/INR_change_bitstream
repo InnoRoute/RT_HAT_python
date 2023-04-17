@@ -11,12 +11,13 @@ from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
 modes={"Default":"_uc0",
+"EKS TSN-Analyser":"_uc1_TSN_EP",
 "Packet Generator":"_uc1",
 "Single Port TSN Endpoint":"_uc2",
 "TSN Mediaconverter":"_uc3",
 "TSN TAP 1G Analyzer Lite":"_uc4",
 "Switched TSN Endpoint":"_uc5"}
-tbi=["_uc1","_uc2""_uc3""_uc4""_uc5"]
+tbi=["_uc1","_uc2","_uc3","_uc4","_uc5"]
 
 def is_root():
     return os.geteuid() == 0
