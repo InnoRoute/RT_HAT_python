@@ -78,6 +78,7 @@ if __name__ == "__main__":
     	print("loading default bitstream...")
     	load_bs("_uc0")
     print("done")
-    os.system('reboot')
+    if len(sys.argv)==1:
+    	os.system('reboot')
 
 
