@@ -72,6 +72,8 @@ if __name__ == "__main__":
     license=int(RT_HAT_FPGA.status()['LICENSE'],16)
     print("License:"+hex(license))
     if (license==0 and selected !="_uc0"):
+    	if len(sys.argv)>1:
+    		exit(1)
     	print("##################################")
     	print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
     	print("##################################")
