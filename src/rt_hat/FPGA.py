@@ -130,6 +130,8 @@ def get_addr(register):
 def status():
 	FPGA_status={}
 	FPGA_status["ID"]=hex(reg_read("C_ADDR_SPI_FPGA_ID0")+(reg_read("C_ADDR_SPI_FPGA_ID1") << 32))
+	FPGA_status["ID: FUSE_DNA"]=hex(int((bin(reg_read("C_ADDR_SPI_FPGA_ID0")+(reg_read("C_ADDR_SPI_FPGA_ID1") << 32))[2:])[::-1], 2))
+	FPGA_status["ID: DNA_PORT"] = hex(int(bin(reg_read("C_ADDR_SPI_FPGA_ID0") + (reg_read("C_ADDR_SPI_FPGA_ID1") << 32))[2:], 2))
 	FPGA_status["ACCESS_ERROR"]=hex(reg_read("C_ADDR_SPI_ACCESS_ERROR"))
 	FPGA_status["Board_REV"]=hex(reg_read("C_ADDR_SPI_BOARD_REV"))
 	FPGA_status["TEMP"]=reg_read("C_ADDR_SPI_FPGA_TEMP")*504/4096-273

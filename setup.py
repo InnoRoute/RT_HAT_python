@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="rt-hat-inr", # Replace with your own username
-    version="0.3.3",
+    version="0.3.4",
     author="Marian Ulbricht",
     author_email="ulbricht@innoroute.de",
     description="RealtimeHAT control",
