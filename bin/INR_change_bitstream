@@ -7,6 +7,7 @@ import wget
 from configobj import ConfigObj
 import os
 import sys
+import requests
 from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
@@ -47,10 +48,15 @@ def load_bs(bs_name):
     		os.remove("/usr/share/InnoRoute/bs_info.conf")
     	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
     	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
+    	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+    	deviceid=RT_HAT_FPGA.status()['ID'][2:]
+    	print("\nDeviceid:"+deviceid)
+    	batch=requests.get('https://innoroute:BaUAFxor3qWebHZ62NhV@key.innoroute.eu/getbatch?device_id='+deviceid).json()['batch']
+    	print("Batch:"+str(batch))
     	print("\nDownloading bitstream...")
     	if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
     		os.remove("/usr/share/InnoRoute/user_bitstream.bit")
-    	bsfile=wget.download(bsname,out="/usr/share/InnoRoute/user_bitstream.bit") 
+    	bsfile=wget.download(bsname+str(batch),out="/usr/share/InnoRoute/user_bitstream.bit") 
     	print("\nload bitstream")
     	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
     	os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')	
