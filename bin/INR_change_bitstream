@@ -53,7 +53,8 @@ def load_bs(bs_name):
     	deviceid=RT_HAT_FPGA.status()['ID'][2:]
     	print("\nDeviceid:"+deviceid)
     	f = open("/usr/share/InnoRoute/keycredentials", "r")
-    	batch=requests.get('https://'+f.read()+'@key.innoroute.eu/getbatch?device_id='+deviceid).json()['batch']
+    	url='https://'+f.readlines()[0].strip()+'@key.innoroute.eu/getbatch?device_id='+deviceid
+    	batch=requests.get(url).json()['batch']
     	print("Batch:"+str(batch))
     	if batch == -1:
     		print("FPGA-ID is not registered!")
