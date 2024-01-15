@@ -42,11 +42,20 @@ def load_bs(bs_name):
     if bs_name in tbi:
     	print("This usecase is currently not available contact info@innoroute.de for more information.\n")
     	return 0
+    os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest.bit')	
     try:
     	if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
     		os.remove("/usr/share/InnoRoute/bs_info.conf")
     	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
     	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
+    	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+    	deviceid=RT_HAT_FPGA.status()['ID'][2:]
+    	print("\nDeviceid:"+deviceid)
+    	f = open("/usr/share/InnoRoute/keycredentials", "r")
+    	batch=requests.get('https://'+f.read()+'@key.innoroute.eu/getbatch?device_id='+deviceid).json()['batch']
+    	print("Batch:"+str(batch))
+    	if batch == -1:
+    		print("FPGA-ID is not registered!")
     	print("\nDownloading bitstream...")
     	if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
     		os.remove("/usr/share/InnoRoute/user_bitstream.bit")
