@@ -43,11 +43,17 @@ def load_bs(bs_name):
     if bs_name in tbi:
     	print("This usecase is currently not available contact info@innoroute.de for more information.\n")
     	return 0
-    os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest.bit')	
+    if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
+    		bs_device="TSNA"
+    		os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest_tsna.bit')	
+    else:
+    		bs_device="HAT"
+    		os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest.bit')	
+    print("Device is: "+bs_device)
     try:
     	if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
     		os.remove("/usr/share/InnoRoute/bs_info.conf")
-    	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
+    	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+"-"+bs_device+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
     	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
     	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
     	deviceid=RT_HAT_FPGA.status()['ID'][2:]
