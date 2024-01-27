@@ -14,11 +14,11 @@ selected=""
 modes={"Default":"_uc0",
 "EKS TSN-Analyser":"_uc1_TSN_EP",
 "Packet Generator":"_uc1",
-"Single Port TSN Endpoint":"_uc2",
+"EKS TSN-Analyser passive TAP":"_uc2",
 "TSN Mediaconverter":"_uc3",
 "TSN TAP 1G Analyzer Lite":"_uc4",
 "Switched TSN Endpoint":"_uc5"}
-tbi=["_uc1","_uc2","_uc3","_uc4","_uc5"]
+tbi=["_uc1","_uc3","_uc4","_uc5"]
 
 def is_root():
     return os.geteuid() == 0
@@ -70,6 +70,10 @@ def load_bs(bs_name):
     	bsfile=wget.download(bsname+str(batch),out="/usr/share/InnoRoute/user_bitstream.bit") 
     	print("\nload bitstream")
     	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
+    	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep BS_repo_hash | cut -d '+"'"+'"'+"'"+' -f2 > /usr/share/InnoRoute/user_bitstream.info')
+    	os.system('cp /usr/share/InnoRoute/user_bitstream.bit /usr/share/InnoRoute/user_bitstream'+bs_name+'.bit')
+    	os.system('cp /usr/share/InnoRoute/user_bitstream.info /usr/share/InnoRoute/user_bitstream'+bs_name+'.info')
+    	os.system('cp /usr/share/InnoRoute/hat_env.sh /usr/share/InnoRoute/hat_env'+bs_name+'.sh')
     	os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')	
     except Exception as e:
     	print("Download failed, check your internet connection!\n"+str(e))

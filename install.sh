@@ -1,5 +1,5 @@
 #!/bin/bash
-IP_addr="192.168.178.169"
+IP_addr="192.168.178.145"
 
 rm dist/*
 python3 -m build &
