@@ -11,14 +11,7 @@ import requests
 from rt_hat import FPGA as RT_HAT_FPGA
 
 selected=""
-modes={"Default":"_uc0",
-"EKS TSN-Analyser":"_uc1_TSN_EP",
-"Packet Generator":"_uc1",
-"EKS TSN-Analyser passive TAP":"_uc2",
-"TSN Mediaconverter":"_uc3",
-"TSN TAP 1G Analyzer Lite":"_uc4",
-"Switched TSN Endpoint":"_uc5"}
-tbi=["_uc1","_uc3","_uc4","_uc5"]
+
 
 def is_root():
     return os.geteuid() == 0
@@ -39,6 +32,8 @@ class TestApp(npyscreen.NPSApp):
         print("möp")
 
 def load_bs(bs_name):
+    global modes
+    global tbi
     print("Downloading config file...")
     if bs_name in tbi:
     	print("This usecase is currently not available contact info@innoroute.de for more information.\n")
@@ -82,6 +77,20 @@ if __name__ == "__main__":
     if is_root()==False:
     	print("need to run with sudo")
     	exit(1)		
+    global modes
+    global tbi
+    if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
+			modes={"EKS Packet Generator und Analyzer":"_uc0",
+			"EKS TSN-Analyser passive TAP":"_uc4"}
+			tbi=["_uc3"]
+    else:
+			modes={"Default":"_uc0",
+			"Packet Generator":"_uc1",
+			"EKS TSN-Analyser passive TAP":"_uc2",
+			"TSN Mediaconverter":"_uc3",
+			"TSN TAP 1G Analyzer Lite":"_uc4",
+			"Switched TSN Endpoint":"_uc5"}
+			tbi=["_uc1","_uc4","_uc3","_uc2","_uc5"]
     App = TestApp()
     if len(sys.argv)==1:
     	App.run()
