@@ -80,17 +80,17 @@ if __name__ == "__main__":
     global modes
     global tbi
     if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
-			modes={"EKS Packet Generator und Analyzer":"_uc0",
-			"EKS TSN-Analyser passive TAP":"_uc4"}
-			tbi=["_uc3"]
+      modes={"EKS Packet Generator und Analyzer":"_uc0",
+      "EKS TSN-Analyser passive TAP":"_uc4"}
+      tbi=["_uc3"]
     else:
-			modes={"Default":"_uc0",
-			"Packet Generator":"_uc1",
-			"EKS TSN-Analyser passive TAP":"_uc2",
-			"TSN Mediaconverter":"_uc3",
-			"TSN TAP 1G Analyzer Lite":"_uc4",
-			"Switched TSN Endpoint":"_uc5"}
-			tbi=["_uc1","_uc4","_uc3","_uc2","_uc5"]
+      modes={"Default":"_uc0",
+      "Packet Generator":"_uc1",
+      "EKS TSN-Analyser passive TAP":"_uc2",
+      "TSN Mediaconverter":"_uc3",
+      "TSN TAP 1G Analyzer Lite":"_uc4",
+      "Switched TSN Endpoint":"_uc5"}
+      tbi=["_uc1","_uc4","_uc3","_uc2","_uc5"]
     App = TestApp()
     if len(sys.argv)==1:
     	App.run()
