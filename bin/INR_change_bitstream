@@ -81,7 +81,7 @@ if __name__ == "__main__":
     global tbi
     if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
       modes={"EKS Packet Generator und Analyzer":"_uc0",
-      "EKS TSN-Analyser passive TAP":"_uc4"}
+      "EKS TSN-Analyser passive TAP":"_uc4_TSN_TAP"}
       tbi=["_uc3"]
     else:
       modes={"Default":"_uc0",
