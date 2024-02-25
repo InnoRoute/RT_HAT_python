@@ -1,0 +1,132 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#build on top of https://npyscreen.readthedocs.io/introduction.html
+# ulbricht@innoroute.de 2024
+import os
+import sys
+import time
+from rt_hat import PHY as RT_HAT_PHY
+import json
+PHYstate={}
+PHYstate_old={}
+settings={}
+settings["state"]="search"
+settings["mode"]="auto"
+
+
+def ggn(speed1,speed2):
+	if speed1<speed2:
+		return speed1;
+	else:
+		return speed2
+
+(rd_phy0_link_up, rd_phy0_link_speed) = RT_HAT_PHY.get_link_status(0)
+(rd_phy1_link_up, rd_phy1_link_speed) = RT_HAT_PHY.get_link_status(1)
+PHYstate_old["PHY0"]="auto"
+PHYstate_old["PHY2"]="auto"
+PHYstate["PHY0"]="auto"
+PHYstate["PHY2"]="auto"
+#main loop
+while True:
+	time.sleep(3)
+	PHYstate_old=PHYstate
+	try:
+		j = open("/usr/share/InnoRoute/INR_PHY_config.json")
+		PHYstate=json.loads(j.read())
+		j.close
+		tmp=PHYstate["PHY0"]
+		tmp=PHYstate["PHY2"]
+		tmp=PHYstate["PHY0_state"]
+		tmp=PHYstate["PHY2_state"]
+	except:
+		PHYstate["PHY0"]="auto"
+		PHYstate["PHY2"]="auto"
+		PHYstate["PHY0_state"]="1000"
+		PHYstate["PHY2_state"]="1000"
+		
+	if PHYstate_old["PHY0"]!=PHYstate["PHY0"] or PHYstate_old["PHY2"]!=PHYstate["PHY2"]:
+		if PHYstate["PHY0"]=="auto" or PHYstate["PHY2"]=="auto":
+			settings["mode"]="auto"
+			settings["state"]="search"
+		else:
+			settings["mode"]=str(ggn(int(PHYstate["PHY0"]),int(PHYstate["PHY2"])))
+			settings["state"]="search"
+			
+
+			
+		
+		
+	if settings["state"]=="search":
+		if settings["mode"]=="auto":
+			RT_HAT_PHY.init()
+			RT_HAT_PHY.phy_adv_init(0,0,0)
+			RT_HAT_PHY.phy_adv_init(1,0,0)
+			print("switch to auto mode")
+		if settings["mode"]=="10":
+			RT_HAT_PHY.phy_force_link_speed(0,0,0,0)
+			RT_HAT_PHY.phy_force_link_speed(1,0,0,0)
+			RT_HAT_PHY.set_FPGA(0)
+			print("force both phys to 0")
+		if settings["mode"]=="100":
+			RT_HAT_PHY.phy_force_link_speed(0,1,0,0)
+			RT_HAT_PHY.phy_force_link_speed(1,1,0,0)
+			RT_HAT_PHY.set_FPGA(1)
+			print("force both phys to 1")
+		if settings["mode"]=="1000":
+			RT_HAT_PHY.phy_force_link_speed(0,2,0,0)
+			RT_HAT_PHY.phy_force_link_speed(1,2,0,0)
+			RT_HAT_PHY.set_FPGA(2)
+			print("force both phys to 2")
+		time.sleep(20)
+	
+	
+	(rd_phy0_link_up_old, rd_phy0_link_speed_old)=(rd_phy0_link_up, rd_phy0_link_speed)
+	(rd_phy1_link_up_old, rd_phy1_link_speed_old)=(rd_phy1_link_up, rd_phy1_link_speed)
+	(rd_phy0_link_up, rd_phy0_link_speed) = RT_HAT_PHY.get_link_status(0)
+	(rd_phy1_link_up, rd_phy1_link_speed) = RT_HAT_PHY.get_link_status(1)
+	if settings["state"]=="search":
+		if (rd_phy0_link_up==0 or rd_phy1_link_up==0 or rd_phy0_link_speed==rd_phy1_link_speed) and not (rd_phy0_link_up==0 and rd_phy1_link_up==0):
+			settings["state"]="locked"
+			if rd_phy0_link_up==1:
+				RT_HAT_PHY.set_FPGA(rd_phy0_link_speed)
+			if rd_phy1_link_up==1:
+				RT_HAT_PHY.set_FPGA(rd_phy1_link_speed)
+		if (rd_phy0_link_up==1 and rd_phy1_link_up==1) and rd_phy0_link_speed!=rd_phy1_link_speed:
+			print("force both phys to "+str(ggn(rd_phy0_link_speed,rd_phy1_link_speed)))
+			RT_HAT_PHY.phy_force_link_speed(0,ggn(rd_phy0_link_speed,rd_phy1_link_speed),0,0)
+			RT_HAT_PHY.phy_force_link_speed(1,ggn(rd_phy0_link_speed,rd_phy1_link_speed),0,0)
+			RT_HAT_PHY.set_FPGA(ggn(rd_phy0_link_speed,rd_phy1_link_speed))
+			time.sleep(20)
+	if settings["state"]=="locked":
+		if rd_phy0_link_up_old!=rd_phy0_link_up or rd_phy0_link_speed_old!=rd_phy0_link_speed or rd_phy1_link_up_old!=rd_phy1_link_up or rd_phy1_link_speed_old!=rd_phy1_link_speed :
+			settings["state"]="search"
+			
+	j = open("/usr/share/InnoRoute/INR_PHY_config.json")
+	tmp=json.loads(j.read())
+	j.close
+	PHYstate["PHY0"]=tmp["PHY0"]
+	PHYstate["PHY2"]=tmp["PHY2"]
+	with open("/usr/share/InnoRoute/INR_PHY_config.json","w") as j:
+		print(settings)
+		if rd_phy0_link_up==0:
+			PHYstate["PHY0_state"]="down"
+		else:
+			if rd_phy0_link_speed==0:
+				PHYstate["PHY0_state"]="10"
+			if rd_phy0_link_speed==1:
+				PHYstate["PHY0_state"]="100"
+			if rd_phy0_link_speed==2:
+				PHYstate["PHY0_state"]="1000"
+		if rd_phy1_link_up==0:
+			PHYstate["PHY2_state"]="down"
+		else:
+			if rd_phy1_link_speed==0:
+				PHYstate["PHY2_state"]="10"
+			if rd_phy1_link_speed==1:
+				PHYstate["PHY2_state"]="100"
+			if rd_phy1_link_speed==2:
+				PHYstate["PHY2_state"]="1000"
+		print(PHYstate)
+		json.dump(PHYstate, j)
+
+	
