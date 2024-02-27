@@ -101,9 +101,19 @@ while True:
 		if rd_phy0_link_up_old!=rd_phy0_link_up or rd_phy0_link_speed_old!=rd_phy0_link_speed or rd_phy1_link_up_old!=rd_phy1_link_up or rd_phy1_link_speed_old!=rd_phy1_link_speed :
 			settings["state"]="search"
 			
-	j = open("/usr/share/InnoRoute/INR_PHY_config.json")
-	tmp=json.loads(j.read())
-	j.close
+	try:
+		j = open("/usr/share/InnoRoute/INR_PHY_config.json")
+		tmp=json.loads(j.read())
+		j.close
+	except:	
+		tmp={}	
+		PHYstate["PHY0"]="auto"
+		PHYstate["PHY2"]="auto"
+		PHYstate["PHY0_state"]="1000"
+		PHYstate["PHY2_state"]="1000"
+		tmp["PHY0"]="auto"
+		tmp["PHY2"]="auto"
+	
 	PHYstate["PHY0"]=tmp["PHY0"]
 	PHYstate["PHY2"]=tmp["PHY2"]
 	with open("/usr/share/InnoRoute/INR_PHY_config.json","w") as j:
