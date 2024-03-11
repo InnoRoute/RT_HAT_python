@@ -51,7 +51,7 @@ def load_bs(bs_name):
     	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+"-"+bs_device+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
     	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
     	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
-    	deviceid=RT_HAT_FPGA.status()['ID'][2:]
+    	deviceid=RT_HAT_FPGA.status()['ID: FUSE_DNA'][2:]
     	print("\nDeviceid:"+deviceid)
     	f = open("/usr/share/InnoRoute/keycredentials", "r")
     	url='https://'+f.readlines()[0].strip()+'@key.innoroute.eu/getbatch?device_id='+deviceid
