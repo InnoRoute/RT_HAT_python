@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="rt-hat-inr", # Replace with your own username
-    version="0.4.6",
+    version="0.4.7",
 
     author="Marian Ulbricht",
     author_email="ulbricht@innoroute.de",

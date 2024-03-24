@@ -45,8 +45,14 @@ while True:
 		PHYstate["PHY2_state"]="1000"
 		
 	if PHYstate_old["PHY0"]!=PHYstate["PHY0"] or PHYstate_old["PHY2"]!=PHYstate["PHY2"]:
-		if PHYstate["PHY0"]=="auto" or PHYstate["PHY2"]=="auto":
+		if PHYstate["PHY0"]=="auto" and PHYstate["PHY2"]=="auto":
 			settings["mode"]="auto"
+			settings["state"]="search"
+		elif PHYstate["PHY0"]=="auto":
+			settings["mode"]=PHYstate["PHY2"]
+			settings["state"]="search"
+		elif PHYstate["PHY2"]=="auto":
+			settings["mode"]=PHYstate["PHY0"]
 			settings["state"]="search"
 		else:
 			settings["mode"]=str(ggn(int(PHYstate["PHY0"]),int(PHYstate["PHY2"])))
