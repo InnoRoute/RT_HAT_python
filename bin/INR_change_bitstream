@@ -15,7 +15,7 @@ selected=""
 
 def is_root():
     return os.geteuid() == 0
-				
+        
 class TestApp(npyscreen.NPSApp):
     def main(self):
         global selected
@@ -36,54 +36,55 @@ def load_bs(bs_name,forcebatch,forcedevice):
     global tbi
     print("Downloading config file...")
     if bs_name in tbi:
-    	print("This usecase is currently not available contact info@innoroute.de for more information.\n")
-    	return 0
+      print("This usecase is currently not available contact info@innoroute.de for more information.\n")
+      return 0
     if forcedevice=="":
-		  if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
-		  		bs_device="TSNA"
-		  		os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest_tsna.bit')	
-		  else:
-		  		bs_device="HAT"
-		  		os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest.bit')
-		else:
-			bs_device=forcedevice
+      if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
+          bs_device="TSNA"
+          os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest_tsna.bit')  
+      else:
+          bs_device="HAT"
+          os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/selftest.bit')
+    else:
+      bs_device=forcedevice
     print("Device is: "+bs_device)
     try:
-    	if forcebatch==-1:
-		  	if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
-		  		os.remove("/usr/share/InnoRoute/bs_info.conf")
-		  	configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+"-"+bs_device+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
-		  	bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
-		  	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
-		  	deviceid=RT_HAT_FPGA.status()['ID: FUSE_DNA'][2:]
-		  	print("\nDeviceid:"+deviceid)
-		  	f = open("/usr/share/InnoRoute/keycredentials", "r")
-		  	url='https://'+f.readlines()[0].strip()+'@key.innoroute.eu/getbatch?device_id='+deviceid
-		  	batch=requests.get(url).json()['batch']
-		  else:
-		  	batch=forcebatch
-    	print("Batch:"+str(batch))
-    	if batch == -1:
-    		print("FPGA-ID is not registered!")
-    	print("\nDownloading bitstream...")
-    	if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
-    		os.remove("/usr/share/InnoRoute/user_bitstream.bit")
-    	bsfile=wget.download(bsname+str(batch),out="/usr/share/InnoRoute/user_bitstream.bit") 
-    	print("\nload bitstream")
-    	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
-    	os.system('cat /usr/share/InnoRoute/bs_info.conf | grep BS_repo_hash | cut -d '+"'"+'"'+"'"+' -f2 > /usr/share/InnoRoute/user_bitstream.info')
-    	os.system('cp /usr/share/InnoRoute/user_bitstream.bit /usr/share/InnoRoute/user_bitstream'+bs_name+'.bit')
-    	os.system('cp /usr/share/InnoRoute/user_bitstream.info /usr/share/InnoRoute/user_bitstream'+bs_name+'.info')
-    	os.system('cp /usr/share/InnoRoute/hat_env.sh /usr/share/InnoRoute/hat_env'+bs_name+'.sh')
-    	if forcebatch==-1:
-    		os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')	
+
+      if os.path.exists("/usr/share/InnoRoute/bs_info.conf"):
+        os.remove("/usr/share/InnoRoute/bs_info.conf")
+      configfile=wget.download("https://raw.githubusercontent.com/InnoRoute/RT-HAT-FPGA/main/HAT/"+bs_name+"-"+bs_device+".conf",out="/usr/share/InnoRoute/bs_info.conf") 
+      bsname=str([line for line in open(configfile) if "BS_file" in line][0].split('"')[1])
+      if forcebatch==-1:
+        RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+        deviceid=RT_HAT_FPGA.status()['ID: FUSE_DNA'][2:]
+        print("\nDeviceid:"+deviceid)
+        f = open("/usr/share/InnoRoute/keycredentials", "r")
+        url='https://'+f.readlines()[0].strip()+'@key.innoroute.eu/getbatch?device_id='+deviceid
+        batch=requests.get(url).json()['batch']
+      else:
+        batch=forcebatch
+      print("Batch:"+str(batch))
+      if batch == -1:
+        print("FPGA-ID is not registered!")
+      print("\nDownloading bitstream...")
+      if os.path.exists("/usr/share/InnoRoute/user_bitstream.bit"):
+        os.remove("/usr/share/InnoRoute/user_bitstream.bit")
+      bsfile=wget.download(bsname+str(batch),out="/usr/share/InnoRoute/user_bitstream.bit") 
+      print("\nload bitstream")
+      os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
+      os.system('cat /usr/share/InnoRoute/bs_info.conf | grep BS_repo_hash | cut -d '+"'"+'"'+"'"+' -f2 > /usr/share/InnoRoute/user_bitstream.info')
+      os.system('cp /usr/share/InnoRoute/user_bitstream.bit /usr/share/InnoRoute/user_bitstream'+bs_name+'.bit')
+      os.system('cp /usr/share/InnoRoute/user_bitstream.info /usr/share/InnoRoute/user_bitstream'+bs_name+'.info')
+      os.system('cp /usr/share/InnoRoute/hat_env.sh /usr/share/InnoRoute/hat_env'+bs_name+'.sh')
+      if forcebatch==-1:
+        os.system('/usr/share/InnoRoute/INR_write_bitstream /usr/share/InnoRoute/user_bitstream.bit')  
     except Exception as e:
-    	print("Download failed, check your internet connection!\n"+str(e))
+      print("Download failed, check your internet connection!\n"+str(e))
 
 if __name__ == "__main__":
     if is_root()==False:
-    	print("need to run with sudo")
-    	exit(1)		
+      print("need to run with sudo")
+      exit(1)    
     global modes
     global tbi
     if "Compute Modul" in os.popen('cat /sys/firmware/devicetree/base/model').read():
@@ -102,30 +103,30 @@ if __name__ == "__main__":
     forcebatch=-1
     forcedevice=""
     if len(sys.argv)==1:
-    	App.run()
-    	selected=modes[selected[0]]
+      App.run()
+      selected=modes[selected[0]]
     else:
-    	selected=sys.argv[1]
+      selected=sys.argv[1]
     if len(sys.argv)>2:
-    	forcebatch=int(sys.argv[2])
-    	forcedevice=sys.argv[3]    	
+      forcebatch=int(sys.argv[2])
+      forcedevice=sys.argv[3]      
     load_bs(selected,forcebatch,forcedevice)
     if forcebatch==-1:
-    	RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
-    	license=int(RT_HAT_FPGA.status()['LICENSE'],16)
+      RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+      license=int(RT_HAT_FPGA.status()['LICENSE'],16)
     else:
-    	license=1
+      license=1
     print("License:"+hex(license))
     if (license==0 and selected !="_uc0"):
-    	if len(sys.argv)>1:
-    		exit(1)
-    	print("##################################")
-    	print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
-    	print("##################################")
-    	print("loading default bitstream...")
-    	load_bs("_uc0")
+      if len(sys.argv)>1:
+        exit(1)
+      print("##################################")
+      print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
+      print("##################################")
+      print("loading default bitstream...")
+      load_bs("_uc0")
     print("done")
     if len(sys.argv)==1:
-    	os.system('reboot')
+      os.system('reboot')
 
 
