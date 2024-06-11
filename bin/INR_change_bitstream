@@ -71,6 +71,7 @@ def load_bs(bs_name,forcebatch,forcedevice):
         f = open("/usr/share/InnoRoute/keycredentials", "r")
         url='https://'+f.readlines()[0].strip()+'@key.innoroute.eu/getbatch?device_id='+deviceid
         batch=requests.get(url).json()['batch']
+      print("Batch:"+str(batch))
       if batch == -1:
         print("FPGA-ID is not registered!")
       print("\nDownloading bitstream...")
