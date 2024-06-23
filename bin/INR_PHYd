@@ -44,7 +44,27 @@ while True:
 		PHYstate["PHY0_state"]="1000"
 		PHYstate["PHY2_state"]="1000"
 		
-	if PHYstate_old["PHY0"]!=PHYstate["PHY0"] or PHYstate_old["PHY2"]!=PHYstate["PHY2"]:
+	failstate=False
+	if PHYstate["PHY0_state"]!="down" and settings["state"]=="locked":
+		if settings["mode"]!=PHYstate["PHY0"] and PHYstate["PHY0_state"]!=PHYstate["PHY2_state"]:
+			failstate=True
+		if PHYstate["PHY0"]!="auto" and PHYstate["PHY0"]!=settings["mode"] and PHYstate["PHY2_state"]=="down":
+			failstate=True
+		if PHYstate["PHY0"]!="auto" and PHYstate["PHY2"]!="auto" and str(ggn(int(PHYstate["PHY0"]),int(PHYstate["PHY2"])))!=settings["mode"] and PHYstate["PHY2_state"]!="down":
+			failstate=True
+	if PHYstate["PHY2_state"]!="down" and settings["state"]=="locked":
+		if settings["mode"]!=PHYstate["PHY2"] and PHYstate["PHY0_state"]!=PHYstate["PHY2_state"]:
+			failstate=True
+		if PHYstate["PHY2"]!="auto" and PHYstate["PHY2"]!=settings["mode"] and PHYstate["PHY0_state"]=="down":
+			failstate=True
+		if PHYstate["PHY0"]!="auto" and PHYstate["PHY2"]!="auto" and str(ggn(int(PHYstate["PHY0"]),int(PHYstate["PHY2"])))!=settings["mode"] and PHYstate["PHY0_state"]!="down":
+			failstate=True
+		if PHYstate["PHY0"]=="auto" and PHYstate["PHY2"]=="auto" and "auto"!=settings["mode"]:
+			failstate=True
+	if failstate:
+		print("Config change detected, making extra round")
+		
+	if PHYstate_old["PHY0"]!=PHYstate["PHY0"] or PHYstate_old["PHY2"]!=PHYstate["PHY2"] or failstate:
 		if PHYstate["PHY0"]=="auto" and PHYstate["PHY2"]=="auto":
 			settings["mode"]="auto"
 			settings["state"]="search"
@@ -142,6 +162,7 @@ while True:
 				PHYstate["PHY2_state"]="100"
 			if rd_phy1_link_speed==2:
 				PHYstate["PHY2_state"]="1000"
+		PHYstate["state"]=settings["state"]
 		print(PHYstate)
 		json.dump(PHYstate, j)
 
