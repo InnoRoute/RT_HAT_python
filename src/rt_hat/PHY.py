@@ -298,7 +298,20 @@ def phy_force_link_speed(phy_addr, phy_link_speed, adv_pause_frames, adv_async_p
 		# terminate software power down mode
 		phy_reg_rst_val_MII_CONTROL = 0x1140 # bitpos 13: SPEED_SEL_LSB = 1, bitpos 12: AUTONEG_EN = 1, bitpos 8: DPLX_MODE = 1,  bitpos 6: SPEED_SEL_MSB = 0, 
 		mdio_write(phy_addr, phy_reg_addr_MII_CONTROL, "0x00", phy_reg_rst_val_MII_CONTROL)
-  
+
+	elif phy_link_speed == 3: # 10/100/1000M FD
+		phy_reg_rst_val_AUTONEG_ADV =  sel_adv_pause + (1 << 8) + (1 << 6) + 1 # bitpos 8: FD_100_ADV = 0; bitpos 6: FD_10_ADV = 0; SELECTOR_FIELD (5b) =0x1 
+		print("phy_reg_rst_val_AUTONEG_ADV: " + str(hex(phy_reg_rst_val_AUTONEG_ADV))+"="+str(bin(phy_reg_rst_val_AUTONEG_ADV)))  
+		print("PHY "+str(phy_addr) + " force link speed: " + str(phy_link_speed))
+		mdio_write(phy_addr, phy_reg_addr_AUTONEG_ADV, "0x00", phy_reg_rst_val_AUTONEG_ADV)
+
+		# advertise 1000M FD only - @2DO later with Pause and Asym Pause in the register phy_reg_addr_AUTONEG_ADV with read modify write
+		phy_reg_rst_val_MSTR_SLV_CONTROL = 0x0200 # bitpos 9: FD_1000_ADV = 1  
+		mdio_write(phy_addr, phy_reg_addr_MSTR_SLV_CONTROL, "0x00", phy_reg_rst_val_MSTR_SLV_CONTROL)
+		
+		# terminate software power down mode
+		phy_reg_rst_val_MII_CONTROL = 0x1140 # bitpos 13: SPEED_SEL_LSB = 0, bitpos 12: AUTONEG_EN = 1, bitpos 8: DPLX_MODE = 1,  bitpos 6: SPEED_SEL_MSB = 1, 
+		mdio_write(phy_addr, phy_reg_addr_MII_CONTROL, "0x00", phy_reg_rst_val_MII_CONTROL)
   
 	else:
 		__debug("Invalid link speed provided")
