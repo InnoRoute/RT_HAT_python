@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="rt-hat-inr", # Replace with your own username
-    version="0.5.2",
+    version="0.5.3",
 
     author="Marian Ulbricht",
     author_email="ulbricht@innoroute.de",
@@ -15,7 +15,9 @@ setuptools.setup(
    'npyscreen',
    'wget',
    'configobj',
-   'goto-statement'
+   'goto-statement',
+   'transitions',
+   'asyncio'
 		],
     scripts=['bin/INR_change_bitstream','bin/INR_FPGA_status','bin/INR_FPGA_license','bin/INR-config','bin/INR_PHYd'],
     long_description_content_type="text/markdown",
