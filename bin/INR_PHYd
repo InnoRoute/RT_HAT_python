@@ -171,8 +171,8 @@ class PHYStateMachine:
             (phy_link_status[0], phy_linkspeed[0]) = RT_HAT_PHY.get_link_status(0)
             (phy_link_status[1], phy_linkspeed[1]) = RT_HAT_PHY.get_link_status(1)
             # update PHY_state in the JSON file
-            data[f"PHY0_state"] = phy_linkspeed[0]
-            data[f"PHY2_state"] = phy_linkspeed[1]
+            data[f"PHY0_state"] = int2phy_speed(phy_linkspeed[0])
+            data[f"PHY2_state"] = int2phy_speed(phy_linkspeed[1])
             # print data to write
             with open(CONFIG_FILE, 'w') as file:
                 json.dump(data, file, indent=4)
