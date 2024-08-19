@@ -170,6 +170,10 @@ class PHYStateMachine:
             # Get phy link status
             (phy_link_status[0], phy_linkspeed[0]) = RT_HAT_PHY.get_link_status(0)
             (phy_link_status[1], phy_linkspeed[1]) = RT_HAT_PHY.get_link_status(1)
+            if phy_link_status[0]: #make FPGA hardware follow PHY0 if up, else PHY2
+                RT_HAT_PHY.set_FPGA(phy_linkspeed[0])
+            else:
+                RT_HAT_PHY.set_FPGA(phy_linkspeed[1])
             # update PHY_state in the JSON file
             data[f"PHY0_state"] = str(int2phy_speed(phy_linkspeed[0]))
             data[f"PHY2_state"] = str(int2phy_speed(phy_linkspeed[1]))
