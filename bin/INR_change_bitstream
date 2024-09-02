@@ -134,7 +134,7 @@ if __name__ == "__main__":
       print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
       print("##################################")
       print("loading default bitstream...")
-      load_bs("_uc0")
+      load_bs("_uc0",forcebatch,forcedevice)
     print("done")
     if len(sys.argv)==1:
       os.system('reboot')
