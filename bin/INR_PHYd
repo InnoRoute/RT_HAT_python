@@ -11,9 +11,10 @@ from rt_hat import PHY as RT_HAT_PHY
 CONFIG_FILE = '/usr/share/InnoRoute/INR_PHY_config.json'
 TEMP_FILE = '/usr/share/InnoRoute/INR_PHY_config_temp.json'
 BLOCKED_FILE = '/usr/share/InnoRoute/blocked.json'
-phy_link_status = [0, 0]
-phy_linkspeed = [0, 0]
-phy_linkspeed_new = [0, 0]
+phy_link_status = [1, 1]
+phy_link_status_old = [1, 1]
+phy_linkspeed = [2, 2]
+phy_linkspeed_new = [2, 2]
 initial_auto_setup_state = ["init"]
 
 def phy_id2int(phy_id):
@@ -70,6 +71,7 @@ class PHYStateMachine:
 
     async def check_config(self):
         while True:
+            print("check_config")
             if self.state == 'idle':
                 self.start_check()
                 print("Checking configuration...")
@@ -82,6 +84,7 @@ class PHYStateMachine:
             await asyncio.sleep(3)
 
     async def config_has_changed(self):
+        print("config_has_changed")
         try:
             with open(CONFIG_FILE, 'r') as file:
                 data = json.load(file)
@@ -90,6 +93,7 @@ class PHYStateMachine:
                     temp_data = json.load(file)
                 
                 # Get phy link status
+                phy_link_status_old=phy_link_status
                 (phy_link_status[0], phy_linkspeed[0]) = RT_HAT_PHY.get_link_status(0)
                 (phy_link_status[1], phy_linkspeed[1]) = RT_HAT_PHY.get_link_status(1)
                 
@@ -135,8 +139,12 @@ class PHYStateMachine:
                             if phy_link_status[ii] == 0:
                                 data[f"{phy_id}_state"] = "down"
                     ii += 1
-                
+                if phy_link_status[0] != phy_link_status_old[0]:
+                    changed_config_user[0]=True
+                if phy_link_status[1] != phy_link_status_old[1]:
+                    changed_config_user[1]=True
                 # Return result
+                print("webui:"+str(changed_config_webui)+" user0:"+str(changed_config_user[0])+" user1:"+str(changed_config_user[1]))
                 if changed_config_webui or changed_config_user[0] or changed_config_user[1]:
                     # Update the json temp file
                     with open(TEMP_FILE, 'w') as file:
@@ -155,6 +163,7 @@ class PHYStateMachine:
             return False
 
     async def apply_changes(self):
+        print("apply_changes")
         try:
             with open(CONFIG_FILE, 'r') as file:
                 data = json.load(file)
@@ -177,6 +186,10 @@ class PHYStateMachine:
             # update PHY_state in the JSON file
             data[f"PHY0_state"] = str(int2phy_speed(phy_linkspeed[0]))
             data[f"PHY2_state"] = str(int2phy_speed(phy_linkspeed[1]))
+            if phy_link_status[0] == 0:
+                data[f"PHY0_state"] = "down"
+            if phy_link_status[1] == 0:
+                data[f"PHY2_state"] = "down"
             # print data to write
             with open(CONFIG_FILE, 'w') as file:
                 json.dump(data, file, indent=4)
@@ -189,4 +202,5 @@ async def main():
     await phy_sm.check_config()
 
 if __name__ == "__main__":
+    RT_HAT_PHY.init()
     asyncio.run(main())
