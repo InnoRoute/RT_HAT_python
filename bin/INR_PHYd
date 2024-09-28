@@ -138,6 +138,11 @@ class PHYStateMachine:
                         else:
                             if phy_link_status[ii] == 0:
                                 data[f"{phy_id}_state"] = "down"
+                                if phy_link_status[0] == 1:
+	                                phy_linkspeed[0] = phy_linkspeed[1]
+	                              else:
+	                                phy_linkspeed[1] = phy_linkspeed[0]
+                                
                     ii += 1
                 if phy_link_status[0] != phy_link_status_old[0]:
                     changed_config_user[0]=True
