@@ -440,12 +440,28 @@ def auto():
 			time.sleep(10)
 			
 			
-def set_FPGA(speed):
+def set_FPGA(speed,port):
 	global RT_HAT_FPGA
-	if speed==0:
-		RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x0)
-	if speed==1:
-		RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x15)
-	if speed==2:
-		RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x2A)
+	if port==0:
+		if speed==0:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x0)
+		if speed==1:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x1)
+		if speed==2:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x2)
+	if port==1:
+		if speed==0:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x0<<2)
+		if speed==1:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x1<<2)
+		if speed==2:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x2<<2)
+	if port==2:
+		if speed==0:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x0<<4)
+		if speed==1:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x1<<4)
+		if speed==2:
+			RT_HAT_FPGA.reg_write("C_ADDR_NET_SPEED",0x2<<4)
+	
 
