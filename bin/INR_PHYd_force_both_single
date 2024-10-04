@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import os
+import json
+import asyncio
+import time
+from transitions import Machine
+from rt_hat import PHY as RT_HAT_PHY
+
+CONFIG_FILE = '/usr/share/InnoRoute/INR_PHY_config.json'
+TEMP_FILE = '/usr/share/InnoRoute/INR_PHY_config_temp.json'
+BLOCKED_FILE = '/usr/share/InnoRoute/blocked.json'
+phy_link_status = [1, 1]
+phy_linkspeed = [2, 2]
+
+try:
+  with open(CONFIG_FILE, 'r') as file:
+    data = json.load(file)
+except Exception as e:
+  print(f"Error applying configuration: {e}")
+
+def int2phy_speed(speed):
+    if speed == 0:
+        return "10"
+    if speed == 1:
+        return "100"
+    if speed == 2:
+        return "1000"
+        
+def phy_speed2int(speed):
+    if speed == "auto":
+        return "auto"
+    print(f"Translating speed: {speed}")
+    if speed == "10":
+        return 0
+    if speed == "100":
+        return 1
+    if speed == "1000":
+        return 2
+if data["PHY0"]=="auto":
+  data["PHY0"]="1000"
+RT_HAT_PHY.phy_force_link_speed(0, phy_speed2int(data["PHY0"]), 0, 0)
+RT_HAT_PHY.phy_force_link_speed(1, phy_speed2int(data["PHY0"]), 0, 0)
+RT_HAT_PHY.set_FPGA(phy_speed2int(data["PHY0"]),0)
+RT_HAT_PHY.set_FPGA(phy_speed2int(data["PHY0"]),1)
+  
+print("waiting 5s for phys")
+time.sleep(5)
+
+
+(phy_link_status[0], phy_linkspeed[0]) = RT_HAT_PHY.get_link_status(0)
+(phy_link_status[1], phy_linkspeed[1]) = RT_HAT_PHY.get_link_status(1)
+
+try:
+  data[f"PHY0_state"] = str(int2phy_speed(phy_linkspeed[0]))
+  data[f"PHY2_state"] = str(int2phy_speed(phy_linkspeed[1]))
+  if phy_link_status[0]==0:
+    data[f"PHY0_state"] = "down"
+  if phy_link_status[1]==0:
+      data[f"PHY2_state"] = "down"
+  with open(CONFIG_FILE, 'w') as file:
+      json.dump(data, file, indent=4)
+except Exception as e:
+   print(f"Error applying configuration: {e}")
+
