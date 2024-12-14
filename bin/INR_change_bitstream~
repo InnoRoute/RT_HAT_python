@@ -103,12 +103,12 @@ if __name__ == "__main__":
     else:
       modes={"Default":"_uc0",
       "Packet Generator":"_uc1",
-      "EKS TSN-Analyser passive TAP":"_uc2",
+      "Passive TAP":"_uc4_TSN_TAP",
       "TSN Mediaconverter":"_uc3",
       "TSN TAP 1G Analyzer Lite":"_uc4",
       "Switched TSN Endpoint":"_uc5",
       "Betatest":"_beta"}
-      tbi=["_uc1","_uc4","_uc3","_uc2","_uc5"]
+      tbi=["_uc1","_uc4","_uc3","_uc2","_uc5","_uc4_TSN_TAP"]
     App = TestApp()
     forcebatch=-1
     forcedevice=""
@@ -134,7 +134,7 @@ if __name__ == "__main__":
       print("This feature is not available for your Device. Please contact info@innoroute.de to extend your license.")
       print("##################################")
       print("loading default bitstream...")
-      load_bs("_uc0")
+      load_bs("_uc0",forcebatch,forcedevice)
     print("done")
     if len(sys.argv)==1:
       os.system('reboot')
