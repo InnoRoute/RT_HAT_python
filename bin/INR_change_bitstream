@@ -135,6 +135,9 @@ if __name__ == "__main__":
       print("##################################")
       print("loading default bitstream...")
       load_bs("_uc0",forcebatch,forcedevice)
+    else:
+      if forcebatch==-1:
+        RT_HAT_FPGA.FC_recompile()
     print("done")
     if len(sys.argv)==1:
       os.system('reboot')
