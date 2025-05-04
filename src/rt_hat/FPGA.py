@@ -56,9 +56,14 @@ def FC_recompile():
 			file_out.write("#define C_BASE_ADDR_TM C_BASE_ADDR_TM_LOWER\n")
 			file_out.write("#endif\n")
 			file_out.write("#endif\n")
-		os.chdir("/usr/share/InnoRoute/TNflowtable")
-		os.system("rm -f /*.o flowcache")
-		os.system("make tnflowtable")
+			file_out.write("""#define C_SUB_ADDR_COMMON_FEATURES_FLOWCACHE (C_ADDR_COMMON_FEATURES_FLOWCACHE-(C_BASE_ADDR_COMMON_LOWER << 8))
+#define C_SUB_ADDR_COMMON_FEATURES_ACC_DP (C_ADDR_COMMON_FEATURES_ACC_DP-(C_BASE_ADDR_COMMON_LOWER << 8))
+#define C_SUB_ADDR_COMMON_ADDR_MAP_REV (C_ADDR_COMMON_ADDR_MAP_REV-(C_BASE_ADDR_COMMON_LOWER << 8))
+#define C_SUB_ADDR_COMMON_USER_REV (C_ADDR_COMMON_USER_REV-(C_BASE_ADDR_COMMON_LOWER << 8))
+#define C_SUB_ADDR_COMMON_TN_MINOR_REV (C_ADDR_COMMON_TN_MINOR_REV-(C_BASE_ADDR_COMMON_LOWER << 8))
+#define C_SUB_ADDR_COMMON_TN_MAJOR_REV (C_ADDR_COMMON_TN_MAJOR_REV-(C_BASE_ADDR_COMMON_LOWER << 8))
+			""")
+#		os.system('sudo bash -c "cd /usr/share/InnoRoute/TNflowtable && rm -f *.o tnflowtable && make tnflowtable"')
 	except Exception as e:
 		print(e)
 
