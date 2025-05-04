@@ -9,6 +9,7 @@ DEBUG_ENABLE=False
 DEBUG_OUTPUT=False
 MMI_FALLBACK=False #use old mmi method, not ioctl
 __mmi_file=0
+_envfile=""
 
 
 #init, load environment addresses
@@ -17,6 +18,8 @@ def init(envfile):
 	global __mmi_file
 	global MMI_FALLBACK
 	global DEBUG_ENABLE
+	global _envfile
+	_envfile=envfile
 	with open(envfile) as file_in:
 		for line in file_in:
 			if "C_ADDR" in line:    
@@ -35,6 +38,31 @@ def init(envfile):
 		MMI_FALLBACK=True
 	
 				
+# recompiles the C-Flowcache control software do update register changes from envfile
+def FC_recompile():
+	global _envfile
+	try:
+		
+		print("parsing "+_envfile+" ...")
+		with open(_envfile) as file_in:
+			file_out=open("/usr/share/InnoRoute/TNflowtable/tn_env.h", "w")
+			for line in file_in:
+				if "C_" in line:
+				 file_out.write("#define "+line.replace("=", " ").replace("#", "//").replace('"', ""))
+			file_out.write('#define	 printconst(constante) printf(#constante ":0x%lx\\n",constante)\n')
+			file_out.write("//try to fix FPGA register renaming\n")
+			file_out.write("#ifndef C_BASE_ADDR_TM\n")
+			file_out.write("#ifdef C_BASE_ADDR_TM_LOWER\n")
+			file_out.write("#define C_BASE_ADDR_TM C_BASE_ADDR_TM_LOWER\n")
+			file_out.write("#endif\n")
+			file_out.write("#endif\n")
+		os.chdir("/usr/share/InnoRoute/TNflowtable")
+		os.system("rm -f /*.o flowcache")
+		os.system("make tnflowtable")
+	except Exception as e:
+		print(e)
+
+
 #low level register access
 def ll_read_ioctl(address): #new faster ioctl function
 	global DEBUG_OUTPUT

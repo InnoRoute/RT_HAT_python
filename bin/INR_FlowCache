@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+#programm reads current fpga status
+import sys
+import os
+from rt_hat import FPGA as RT_HAT_FPGA
+import pprint
+
+RT_HAT_FPGA.init("/usr/share/InnoRoute/hat_env.sh")
+RT_HAT_FPGA.DEBUG_OUTPUT=False
+#print(sys.argv)
+#print(" ".join(sys.argv[1:]))
+if not "-m" in sys.argv:
+	sys.argv.append("-m")
+fileStream = os.popen('tnflowtable '+" ".join(sys.argv[1:]))
+lines = fileStream.readlines()
+commands = []
+for line in lines:
+	if "TNbar1" in line:
+		commands.append(line.replace('\n', ' ').replace('\r', ''))
+	else:
+		print(line.replace('\n', ' ').replace('\r', ''))
+		
+for command in commands:
+	cmd=command.split(' ')
+	if(cmd[2]=='w'):
+		RT_HAT_FPGA.ll_write_ioctl(int(cmd[1], 16),int(cmd[3], 16))
+
+
+

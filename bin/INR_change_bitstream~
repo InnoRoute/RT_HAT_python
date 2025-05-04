@@ -79,7 +79,7 @@ def load_bs(bs_name,forcebatch,forcedevice):
         os.remove("/usr/share/InnoRoute/user_bitstream.bit")
       bsfile=wget.download(bsname+str(batch),out="/usr/share/InnoRoute/user_bitstream.bit") 
       print("\nload bitstream")
-      os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_ADDR_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
+      os.system('cat /usr/share/InnoRoute/bs_info.conf | grep -E "C_|FEATURE_" >/usr/share/InnoRoute/hat_env.sh')
       os.system('cat /usr/share/InnoRoute/bs_info.conf | grep BS_repo_hash | cut -d '+"'"+'"'+"'"+' -f2 > /usr/share/InnoRoute/user_bitstream.info')
       os.system('cp /usr/share/InnoRoute/user_bitstream.bit /usr/share/InnoRoute/user_bitstream'+bs_name+'.bit')
       os.system('cp /usr/share/InnoRoute/user_bitstream.info /usr/share/InnoRoute/user_bitstream'+bs_name+'.info')
