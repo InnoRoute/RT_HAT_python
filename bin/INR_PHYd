@@ -120,7 +120,7 @@ class PHYStateMachine:
                             changed_config_user[ii] = False
                     else:
                         print("\n\n",phy_link_status, "\n\n")
-                        if phy_link_status[0] == 1 and phy_link_status[1] == 1:
+             	           if phy_link_status[0] == 1 and phy_link_status[1] == 1:
                             lower_speed = min(phy_linkspeed[0], phy_linkspeed[1])
                             if lower_speed == phy_linkspeed[0] and phy_linkspeed[0]==phy_linkspeed[1]:
                                 changed_config_user[ii] = False

@@ -102,7 +102,7 @@ if __name__ == "__main__":
       tbi=["_uc3"]
     else:
       modes={"Default":"_uc0",
-      "Packet Generator":"_uc1",
+      "FlowCache + TAS":"_uc1",
       "Passive TAP":"_uc4",
       "TSN Mediaconverter":"_uc3",
       "Switched TSN Endpoint":"_uc5",
